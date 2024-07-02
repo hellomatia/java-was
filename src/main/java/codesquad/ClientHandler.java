@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
 
 class ClientHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
@@ -45,7 +44,7 @@ class ClientHandler implements Runnable {
         File file = new File(filePath);
         if (file.exists() && !file.isDirectory()) {
             String contentType = getContentType(filePath);
-            byte[] fileContent = Files.readAllBytes(file.toPath());
+            byte[] fileContent = readFileToByteArray(file);
 
             return HttpResponse.builder()
                     .statusCode(200)
@@ -61,6 +60,18 @@ class ClientHandler implements Runnable {
                 .addHeader("Content-Type", "text/plain")
                 .body("404 File Not Found")
                 .build();
+    }
+
+    private byte[] readFileToByteArray(File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file);
+             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                bos.write(buffer, 0, bytesRead);
+            }
+            return bos.toByteArray();
+        }
     }
 
     private void sendResponse(OutputStream out, HttpResponse response) throws IOException {
