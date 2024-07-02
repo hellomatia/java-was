@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 
 class ClientHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
@@ -48,7 +49,7 @@ class ClientHandler implements Runnable {
             return createNotFoundResponse();
         }
 
-        String contentType = getContentType(filePath);
+        String contentType = getMimeType(filePath);
         byte[] fileContent = readFileToByteArray(file);
 
         return HttpResponse.builder()
@@ -99,14 +100,39 @@ class ClientHandler implements Runnable {
         out.flush();
     }
 
-    private static String getContentType(String filePath) {
-        if (filePath.endsWith(".html")) { return "text/html"; }
-        if (filePath.endsWith(".css")) { return "text/css"; }
-        if (filePath.endsWith(".js")) { return "application/javascript"; }
-        if (filePath.endsWith(".ico")) { return "image/x-icon"; }
-        if (filePath.endsWith(".png")) { return "image/png"; }
-        if (filePath.endsWith(".jpeg")) { return "image/jpeg"; }
-        if (filePath.endsWith(".svg")) { return "image/svg+xml"; }
-        return "text/plain";
+    private static String getMimeType(String filePath) {
+        return ContentType.getMimeType(filePath);
+    }
+
+    public enum ContentType {
+        HTML("html", "text/html"),
+        CSS("css", "text/css"),
+        JS("js", "application/javascript"),
+        ICO("ico", "image/x-icon"),
+        PNG("png", "image/png"),
+        JPEG("jpeg", "image/jpeg"),
+        SVG("svg", "image/svg+xml");
+
+        private final String extension;
+        private final String mimeType;
+
+        ContentType(String extension, String mimeType) {
+            this.extension = extension;
+            this.mimeType = mimeType;
+        }
+
+        public static String getMimeType(String filePath) {
+            String extension = getExtension(filePath);
+            return Arrays.stream(values())
+                    .filter(ct -> ct.extension.equalsIgnoreCase(extension))
+                    .map(ct -> ct.mimeType)
+                    .findFirst()
+                    .orElse("text/plain");
+        }
+
+        private static String getExtension(String filePath) {
+            int dotIndex = filePath.lastIndexOf('.');
+            return (dotIndex > 0) ? filePath.substring(dotIndex + 1) : "";
+        }
     }
 }
