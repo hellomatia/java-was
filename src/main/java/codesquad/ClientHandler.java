@@ -1,10 +1,12 @@
 package codesquad;
 
 import codesquad.http.HttpRequest;
+import codesquad.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 
 class ClientHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
@@ -27,11 +29,8 @@ class ClientHandler implements Runnable {
             HttpRequest request = HttpRequest.parse(in);
             logger.debug("Client received: " + request);
             String content = router.getContent(request.getPath());
-            if (content.startsWith("/")) {
-                sendFile(out, content);
-            } else {
-                sendResponse(out, "text/html", content);
-            }
+            HttpResponse response = createFileResponse(content);
+            sendResponse(out, response);
         } catch (IOException e) {
             logger.error("Error handling client request", e);
         } finally {
@@ -43,31 +42,30 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void sendFile(OutputStream out, String filePath) throws IOException {
+    private HttpResponse createFileResponse(String filePath) throws IOException {
         File file = new File(STATIC_PATH + filePath);
         if (file.exists() && !file.isDirectory()) {
             String contentType = getContentType(filePath);
-            out.write("HTTP/1.1 200 OK\r\n".getBytes());
-            out.write(("Content-Type: " + contentType + "\r\n").getBytes());
-            out.write("\r\n".getBytes());
+            byte[] fileContent = Files.readAllBytes(file.toPath());
 
-            try (FileInputStream fis = new FileInputStream(file);
-                 BufferedInputStream bis = new BufferedInputStream(fis)) {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = bis.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-            }
-            out.flush();
+            return HttpResponse.builder()
+                    .statusCode(200)
+                    .statusText("OK")
+                    .addHeader("Content-Type", contentType)
+                    .addHeader("Content-Length", String.valueOf(fileContent.length))
+                    .body(new String(fileContent)) // 주의: 텍스트 파일 가정. 바이너리 파일의 경우 다르게 처리해야 함
+                    .build();
         }
+        return HttpResponse.builder()
+                .statusCode(404)
+                .statusText("Not Found")
+                .addHeader("Content-Type", "text/plain")
+                .body("404 File Not Found")
+                .build();
     }
 
-    private void sendResponse(OutputStream out, String contentType, String response) throws IOException {
-        out.write("HTTP/1.1 200 OK\r\n".getBytes());
-        out.write(("Content-Type: " + contentType + "\r\n").getBytes());
-        out.write("\r\n".getBytes());
-        out.write(response.getBytes());
+    private void sendResponse(OutputStream out, HttpResponse response) throws IOException {
+        out.write(response.toString().getBytes());
         out.flush();
     }
 
