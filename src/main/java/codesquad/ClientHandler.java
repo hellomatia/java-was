@@ -42,18 +42,38 @@ class ClientHandler implements Runnable {
 
     private static HttpResponse createFileResponse(String filePath) throws IOException {
         File file = new File(filePath);
-        if (file.exists() && !file.isDirectory()) {
-            String contentType = getContentType(filePath);
-            byte[] fileContent = readFileToByteArray(file);
+        logger.debug("Processing file request for: {}", filePath);
 
-            return HttpResponse.builder()
-                    .statusCode(200)
-                    .statusText("OK")
-                    .addHeader("Content-Type", contentType)
-                    .addHeader("Content-Length", String.valueOf(fileContent.length))
-                    .body(new String(fileContent)) // 주의: 텍스트 파일 가정. 바이너리 파일의 경우 다르게 처리해야 함
-                    .build();
+        if (!file.exists() || file.isDirectory()) {
+            return createNotFoundResponse();
         }
+
+        String contentType = getContentType(filePath);
+        byte[] fileContent = readFileToByteArray(file);
+
+        return HttpResponse.builder()
+                .statusCode(getStatusCode(filePath))
+                .statusText(getStatusText(filePath))
+                .addHeader("Content-Type", contentType)
+                .addHeader("Content-Length", String.valueOf(fileContent.length))
+                .body(new String(fileContent))
+                .build();
+    }
+
+    private static int getStatusCode(String filePath) {
+        return filePath.endsWith("404.html") ? 404 : 200;
+    }
+
+    private static String getStatusText(String filePath) {
+        return filePath.endsWith("404.html") ? "Not Found" : "OK";
+    }
+
+    private static HttpResponse createNotFoundResponse() throws IOException {
+        File notFoundFile = new File("404.html");
+        if (notFoundFile.exists() && !notFoundFile.isDirectory()) {
+            return createFileResponse(notFoundFile.getPath());
+        }
+
         return HttpResponse.builder()
                 .statusCode(404)
                 .statusText("Not Found")

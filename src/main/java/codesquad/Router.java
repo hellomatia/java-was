@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Router {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static final String RESOURCES_STATIC_PATH = "src/main/resources/static";
+    private static final String ERROR_404_PATH = "src/main/resources/static/error/404.html";
     private static final String STATIC_PATH = "/static";
     private final Map<String, String> routes;
 
@@ -54,6 +55,6 @@ public class Router {
     }
 
     public String getFilePath(String url) {
-        return routes.getOrDefault(url, "<h1>404 Not Found</h1>");
+        return routes.getOrDefault(url, ERROR_404_PATH);
     }
 }
