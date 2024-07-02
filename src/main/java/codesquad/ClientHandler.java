@@ -10,7 +10,6 @@ import java.nio.file.Files;
 
 class ClientHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
-    private static final String STATIC_PATH = "src/main/resources/static";
     private final Socket clientSocket;
     private final Router router;
 
@@ -28,8 +27,8 @@ class ClientHandler implements Runnable {
             logger.debug("Client connected");
             HttpRequest request = HttpRequest.parse(in);
             logger.debug("Client received: " + request);
-            String content = router.getContent(request.getPath());
-            HttpResponse response = createFileResponse(content);
+            String filePath = router.getFilePath(request.getPath());
+            HttpResponse response = createFileResponse(filePath);
             sendResponse(out, response);
         } catch (IOException e) {
             logger.error("Error handling client request", e);
@@ -43,7 +42,7 @@ class ClientHandler implements Runnable {
     }
 
     private HttpResponse createFileResponse(String filePath) throws IOException {
-        File file = new File(STATIC_PATH + filePath);
+        File file = new File(filePath);
         if (file.exists() && !file.isDirectory()) {
             String contentType = getContentType(filePath);
             byte[] fileContent = Files.readAllBytes(file.toPath());
