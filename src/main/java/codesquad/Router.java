@@ -17,7 +17,6 @@ public class Router {
     public Router() {
         routes = new ConcurrentHashMap<>();
         loadStaticFiles();
-        System.out.println(routes);
     }
 
     private void loadStaticFiles() {

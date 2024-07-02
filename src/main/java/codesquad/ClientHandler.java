@@ -40,7 +40,7 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private HttpResponse createFileResponse(String filePath) throws IOException {
+    private static HttpResponse createFileResponse(String filePath) throws IOException {
         File file = new File(filePath);
         if (file.exists() && !file.isDirectory()) {
             String contentType = getContentType(filePath);
@@ -62,7 +62,7 @@ class ClientHandler implements Runnable {
                 .build();
     }
 
-    private byte[] readFileToByteArray(File file) throws IOException {
+    private static byte[] readFileToByteArray(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file);
              ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[1024];
@@ -74,12 +74,12 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void sendResponse(OutputStream out, HttpResponse response) throws IOException {
+    private static void sendResponse(OutputStream out, HttpResponse response) throws IOException {
         out.write(response.toString().getBytes());
         out.flush();
     }
 
-    private String getContentType(String filePath) {
+    private static String getContentType(String filePath) {
         if (filePath.endsWith(".html")) { return "text/html"; }
         if (filePath.endsWith(".css")) { return "text/css"; }
         if (filePath.endsWith(".js")) { return "application/javascript"; }
