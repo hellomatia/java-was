@@ -29,7 +29,7 @@ class ClientHandler implements Runnable {
             String filePath = router.getFilePath(request.getPath());
             HttpResponse response = createFileResponse(filePath);
             sendResponse(out, response);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Error handling client request", e);
         } finally {
             try {

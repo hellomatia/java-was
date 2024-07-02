@@ -45,6 +45,9 @@ public class HttpRequest {
     }
 
     private static void parseRequestLine(String requestLine, Builder builder) {
+        if (requestLine == null || requestLine.isEmpty()) {
+            throw new IllegalArgumentException("Empty request line");
+        }
         String[] parts = requestLine.split(" ");
         if (parts.length != 3) {
             throw new IllegalArgumentException("Invalid request line: " + requestLine);
