@@ -73,8 +73,10 @@ public class HttpRequest {
         if (builder.headers.containsKey("Content-Length")) {
             int contentLength = Integer.parseInt(builder.headers.get("Content-Length"));
             char[] bodyChars = new char[contentLength];
-            reader.read(bodyChars, 0, contentLength);
-            builder.body(new String(bodyChars));
+            int charsRead = reader.read(bodyChars, 0, contentLength);
+            if (charsRead > 0) {
+                builder.body(new String(bodyChars, 0, charsRead).trim());
+            }
         }
     }
 
