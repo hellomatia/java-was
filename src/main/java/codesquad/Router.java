@@ -2,7 +2,6 @@ package codesquad;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
@@ -13,11 +12,19 @@ public class Router {
     private static final String RESOURCES_STATIC_PATH = "src/main/resources/static";
     private static final String ERROR_404_PATH = "src/main/resources/static/error/404.html";
     private static final String STATIC_PATH = "/static";
+    private static Router instance;
     private final Map<String, String> routes;
 
-    public Router() {
+    private Router() {
         routes = new ConcurrentHashMap<>();
         loadStaticFiles();
+    }
+
+    public static synchronized Router getInstance() {
+        if (instance == null) {
+            instance = new Router();
+        }
+        return instance;
     }
 
     private void loadStaticFiles() {

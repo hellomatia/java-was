@@ -16,7 +16,7 @@ class ClientHandlerTest {
     @BeforeEach
     void setUp() {
         testSocket = new TestSocket();
-        router = new Router();
+        router = Router.getInstance();
         clientHandler = new ClientHandler(testSocket, router);
     }
 
