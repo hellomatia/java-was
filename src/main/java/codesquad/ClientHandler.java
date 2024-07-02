@@ -80,6 +80,12 @@ class ClientHandler implements Runnable {
 
     private String getContentType(String filePath) {
         if (filePath.endsWith(".html")) { return "text/html"; }
+        if (filePath.endsWith(".css")) { return "text/css"; }
+        if (filePath.endsWith(".js")) { return "application/javascript"; }
+        if (filePath.endsWith(".ico")) { return "image/x-icon"; }
+        if (filePath.endsWith(".png")) { return "image/png"; }
+        if (filePath.endsWith(".jpeg")) { return "image/jpeg"; }
+        if (filePath.endsWith(".svg")) { return "image/svg+xml"; }
         return "text/plain";
     }
 }
