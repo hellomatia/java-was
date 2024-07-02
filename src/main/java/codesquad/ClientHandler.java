@@ -1,5 +1,6 @@
 package codesquad;
 
+import codesquad.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
@@ -19,25 +20,17 @@ class ClientHandler implements Runnable {
     @Override
     public void run() {
         try (
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                InputStream in = clientSocket.getInputStream();
                 OutputStream out = clientSocket.getOutputStream()
         ) {
             logger.debug("Client connected");
-            String request = in.readLine();
-            if (request != null && !request.isEmpty()) {
-                String[] requestParts = request.split(" ");
-                String method = requestParts[0];
-                String url = requestParts[1];
-                String protocol = requestParts[2];
-                logger.debug("Client request HTTP method: {}", method);
-                logger.debug("Client request URL: {}", url);
-                logger.debug("Client request HTTP Protocol: {}", protocol);
-                String content = router.getContent(url);
-                if (content.startsWith("/")) {
-                    sendFile(out, content);
-                } else {
-                    sendResponse(out, "text/html", content);
-                }
+            HttpRequest request = HttpRequest.parse(in);
+            logger.debug("Client received: " + request);
+            String content = router.getContent(request.getPath());
+            if (content.startsWith("/")) {
+                sendFile(out, content);
+            } else {
+                sendResponse(out, "text/html", content);
             }
         } catch (IOException e) {
             logger.error("Error handling client request", e);
