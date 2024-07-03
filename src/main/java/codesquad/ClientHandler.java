@@ -1,6 +1,7 @@
 package codesquad;
 
 import codesquad.http.ContentType;
+import codesquad.http.Http11Parser;
 import codesquad.http.HttpRequest;
 import codesquad.http.HttpResponse;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ class ClientHandler implements Runnable {
                 OutputStream out = clientSocket.getOutputStream()
         ) {
             logger.debug("Client connected");
-            HttpRequest request = HttpRequest.parse(in);
+            HttpRequest request = Http11Parser.parse(in);
             logger.debug("Client received: " + request);
             String filePath = router.getFilePath(request.getPath());
             HttpResponse response = createFileResponse(filePath);

@@ -1,9 +1,5 @@
 package codesquad.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,54 +27,6 @@ public class HttpRequest {
     public Map<String, String> getHeaders() { return headers; }
 
     public String getBody() { return body; }
-
-    public static HttpRequest parse(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        Builder builder = new Builder();
-
-        String requestLine = reader.readLine();
-        parseRequestLine(requestLine, builder);
-        parseHeaders(reader, builder);
-        parseBody(reader, builder);
-
-        return builder.build();
-    }
-
-    private static void parseRequestLine(String requestLine, Builder builder) {
-        if (requestLine == null || requestLine.isEmpty()) {
-            throw new IllegalArgumentException("Empty request line");
-        }
-        String[] parts = requestLine.split(" ");
-        if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid request line: " + requestLine);
-        }
-        builder.method(parts[0])
-                .path(parts[1])
-                .version(parts[2]);
-    }
-
-    private static void parseHeaders(BufferedReader reader, Builder builder) throws IOException {
-        String headerLine;
-        while (!(headerLine = reader.readLine()).isEmpty()) {
-            int colonIndex = headerLine.indexOf(':');
-            if (colonIndex > 0) {
-                String name = headerLine.substring(0, colonIndex).trim();
-                String value = headerLine.substring(colonIndex + 1).trim();
-                builder.addHeader(name, value);
-            }
-        }
-    }
-
-    private static void parseBody(BufferedReader reader, Builder builder) throws IOException {
-        if (builder.headers.containsKey("Content-Length")) {
-            int contentLength = Integer.parseInt(builder.headers.get("Content-Length"));
-            char[] bodyChars = new char[contentLength];
-            int charsRead = reader.read(bodyChars, 0, contentLength);
-            if (charsRead > 0) {
-                builder.body(new String(bodyChars, 0, charsRead).trim());
-            }
-        }
-    }
 
     @Override
     public String toString() {
@@ -113,6 +61,10 @@ public class HttpRequest {
             return this;
         }
 
+        public String getHeader(String name) {
+            return this.headers.get(name);
+        }
+
         public Builder body(String body) {
             this.body = body;
             return this;
@@ -121,5 +73,9 @@ public class HttpRequest {
         public HttpRequest build() {
             return new HttpRequest(this);
         }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 }

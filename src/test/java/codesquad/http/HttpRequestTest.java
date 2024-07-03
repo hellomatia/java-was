@@ -18,7 +18,7 @@ class HttpRequestTest {
                         "\r\n";
 
         InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
-        HttpRequest request = HttpRequest.parse(inputStream);
+        HttpRequest request = Http11Parser.parse(inputStream);
 
         assertEquals("GET", request.getMethod());
         assertEquals("/index.html", request.getPath());
@@ -37,7 +37,7 @@ class HttpRequestTest {
                         "\r\n";
 
         InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
-        HttpRequest request = HttpRequest.parse(inputStream);
+        HttpRequest request = Http11Parser.parse(inputStream);
 
         assertEquals(method, request.getMethod());
         assertEquals("/api/resource", request.getPath());
@@ -54,7 +54,7 @@ class HttpRequestTest {
                         "{\"key\":\"value\"}";
 
         InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
-        HttpRequest request = HttpRequest.parse(inputStream);
+        HttpRequest request = Http11Parser.parse(inputStream);
 
         assertEquals("POST", request.getMethod());
         assertEquals("/submit", request.getPath());
@@ -68,7 +68,7 @@ class HttpRequestTest {
         String emptyRequestString = "";
         InputStream inputStream = new ByteArrayInputStream(emptyRequestString.getBytes());
 
-        assertThrows(IllegalArgumentException.class, () -> HttpRequest.parse(inputStream));
+        assertThrows(IllegalArgumentException.class, () -> Http11Parser.parse(inputStream));
     }
 
     @Test
@@ -83,7 +83,7 @@ class HttpRequestTest {
                         koreanContent;
 
         InputStream inputStream = new ByteArrayInputStream(requestString.getBytes("UTF-8"));
-        HttpRequest request = HttpRequest.parse(inputStream);
+        HttpRequest request = Http11Parser.parse(inputStream);
 
         assertEquals(koreanContent, request.getBody());
     }
@@ -97,7 +97,7 @@ class HttpRequestTest {
                         "\r\n";
 
         InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
-        HttpRequest request = HttpRequest.parse(inputStream);
+        HttpRequest request = Http11Parser.parse(inputStream);
 
         assertEquals(longValue, request.getHeaders().get("X-Long-Header"));
     }
