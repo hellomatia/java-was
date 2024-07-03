@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Http11Parser {
     private Http11Parser() {
@@ -29,9 +31,52 @@ public class Http11Parser {
         if (parts.length != 3) {
             throw new IllegalArgumentException("Invalid request line: " + requestLine);
         }
-        builder.method(parts[0])
-                .path(parts[1])
-                .version(parts[2]);
+        builder.method(parts[0]);
+        parsePathAndQueryParams(parts[1], builder);
+        builder.version(parts[2]);
+    }
+
+    private static void parsePathAndQueryParams(String fullPath, HttpRequest.Builder builder) {
+        String[] pathParts = fullPath.split("\\?", 2);
+        builder.path(pathParts[0]);
+
+        if (pathParts.length > 1) {
+            Map<String, String> queryParams = parseQueryParams(pathParts[1]);
+            builder.queryParams(queryParams);
+        }
+    }
+
+    private static Map<String, String> parseQueryParams(String queryString) {
+        Map<String, String> queryParams = new HashMap<>();
+        String[] pairs = queryString.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            if (idx > 0) {
+                String key = urlDecode(pair.substring(0, idx));
+                String value = idx < pair.length() - 1 ? urlDecode(pair.substring(idx + 1)) : "";
+                queryParams.put(key, value);
+            } else {
+                queryParams.put(urlDecode(pair), "");
+            }
+        }
+        return queryParams;
+    }
+
+    private static String urlDecode(String value) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '+') {
+                result.append(' ');
+            } else if (c == '%' && i + 2 < value.length()) {
+                int code = Integer.parseInt(value.substring(i + 1, i + 3), 16);
+                result.append((char) code);
+                i += 2;
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
 
     private static void parseHeaders(BufferedReader reader, HttpRequest.Builder builder) throws IOException {

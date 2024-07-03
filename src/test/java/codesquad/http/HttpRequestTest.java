@@ -101,4 +101,80 @@ class HttpRequestTest {
 
         assertEquals(longValue, request.getHeaders().get("X-Long-Header"));
     }
+
+    @Test
+    void 단일_쿼리_파라미터_파싱() throws IOException {
+        String requestString =
+                "GET /search?q=test HTTP/1.1\r\n" +
+                        "Host: example.com\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
+        HttpRequest request = Http11Parser.parse(inputStream);
+
+        assertEquals("/search", request.getPath());
+        assertEquals("test", request.getQueryParam("q"));
+    }
+
+    @Test
+    void 다중_쿼리_파라미터_파싱() throws IOException {
+        String requestString =
+                "GET /search?q=test&page=1&limit=10 HTTP/1.1\r\n" +
+                        "Host: example.com\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
+        HttpRequest request = Http11Parser.parse(inputStream);
+
+        assertEquals("/search", request.getPath());
+        assertEquals("test", request.getQueryParam("q"));
+        assertEquals("1", request.getQueryParam("page"));
+        assertEquals("10", request.getQueryParam("limit"));
+    }
+
+    @Test
+    void 특수문자가_포함된_쿼리_파라미터_파싱() throws IOException {
+        String requestString =
+                "GET /search?q=hello+world&special=%21%40%23%24%25 HTTP/1.1\r\n" +
+                        "Host: example.com\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
+        HttpRequest request = Http11Parser.parse(inputStream);
+
+        assertEquals("/search", request.getPath());
+        assertEquals("hello world", request.getQueryParam("q"));
+        assertEquals("!@#$%", request.getQueryParam("special"));
+    }
+
+    @Test
+    void 값이_없는_쿼리_파라미터_파싱() throws IOException {
+        String requestString =
+                "GET /toggle?feature1&feature2= HTTP/1.1\r\n" +
+                        "Host: example.com\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
+        HttpRequest request = Http11Parser.parse(inputStream);
+
+        assertEquals("/toggle", request.getPath());
+        assertEquals("", request.getQueryParam("feature1"));
+        assertEquals("", request.getQueryParam("feature2"));
+        assertTrue(request.getQueryParams().containsKey("feature1"));
+        assertTrue(request.getQueryParams().containsKey("feature2"));
+    }
+
+    @Test
+    void 쿼리_파라미터가_없는_요청_처리() throws IOException {
+        String requestString =
+                "GET /index.html HTTP/1.1\r\n" +
+                        "Host: example.com\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
+        HttpRequest request = Http11Parser.parse(inputStream);
+
+        assertEquals("/index.html", request.getPath());
+        assertTrue(request.getQueryParams().isEmpty());
+    }
 }

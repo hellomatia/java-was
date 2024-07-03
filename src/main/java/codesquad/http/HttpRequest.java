@@ -8,6 +8,7 @@ public class HttpRequest {
     private final String path;
     private final String version;
     private final Map<String, String> headers;
+    private final Map<String, String> queryParams;
     private final String body;
 
     private HttpRequest(Builder builder) {
@@ -15,6 +16,7 @@ public class HttpRequest {
         this.path = builder.path;
         this.version = builder.version;
         this.headers = Map.copyOf(builder.headers);
+        this.queryParams = new HashMap<>(builder.queryParams);
         this.body = builder.body;
     }
 
@@ -26,12 +28,26 @@ public class HttpRequest {
 
     public Map<String, String> getHeaders() { return headers; }
 
+    public String getQueryParam(String name) {
+        return queryParams.get(name);
+    }
+
+    public Map<String, String> getQueryParams() {
+        return new HashMap<>(queryParams);
+    }
+
     public String getBody() { return body; }
 
     @Override
     public String toString() {
-        return String.format("HttpRequest{method='%s', path='%s', version='%s', headers=%s, body='%s'}",
-                method, path, version, headers, body);
+        return "HttpRequest{" +
+                "method='" + method + '\'' +
+                ", path='" + path + '\'' +
+                ", version='" + version + '\'' +
+                ", headers=" + headers +
+                ", queryParams=" + queryParams +
+                ", body='" + body + '\'' +
+                '}';
     }
 
     public static class Builder {
@@ -39,6 +55,7 @@ public class HttpRequest {
         private String path;
         private String version;
         private Map<String, String> headers = new HashMap<>();
+        private Map<String, String> queryParams = new HashMap<>();
         private String body;
 
         public Builder method(String method) {
@@ -63,6 +80,11 @@ public class HttpRequest {
 
         public String getHeader(String name) {
             return this.headers.get(name);
+        }
+
+        public Builder queryParams(Map<String, String> queryParams) {
+            this.queryParams = queryParams;
+            return this;
         }
 
         public Builder body(String body) {
