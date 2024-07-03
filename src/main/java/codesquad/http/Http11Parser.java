@@ -1,9 +1,6 @@
 package codesquad.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,13 +33,28 @@ public class Http11Parser {
         builder.version(parts[2]);
     }
 
+    private static void parseHeaders(BufferedReader reader, HttpRequest.Builder builder) throws IOException {
+        String headerLine;
+        while (!(headerLine = reader.readLine()).isEmpty()) {
+            int colonIndex = headerLine.indexOf(':');
+            if (colonIndex > 0) {
+                String name = headerLine.substring(0, colonIndex).trim();
+                String value = headerLine.substring(colonIndex + 1).trim();
+                builder.addHeader(name, value);
+            }
+        }
+    }
+
     private static void parsePathAndQueryParams(String fullPath, HttpRequest.Builder builder) {
-        String[] pathParts = fullPath.split("\\?", 2);
+        String decodedPath = urlDecode(fullPath);
+        String[] pathParts = decodedPath.split("\\?", 2);
         builder.path(pathParts[0]);
 
         if (pathParts.length > 1) {
             Map<String, String> queryParams = parseQueryParams(pathParts[1]);
             builder.queryParams(queryParams);
+        } else {
+            builder.queryParams(new HashMap<>());
         }
     }
 
@@ -63,31 +75,15 @@ public class Http11Parser {
     }
 
     private static String urlDecode(String value) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-            if (c == '+') {
-                result.append(' ');
-            } else if (c == '%' && i + 2 < value.length()) {
-                int code = Integer.parseInt(value.substring(i + 1, i + 3), 16);
-                result.append((char) code);
-                i += 2;
-            } else {
-                result.append(c);
-            }
+        if (value == null) {
+            return null;
         }
-        return result.toString();
-    }
-
-    private static void parseHeaders(BufferedReader reader, HttpRequest.Builder builder) throws IOException {
-        String headerLine;
-        while (!(headerLine = reader.readLine()).isEmpty()) {
-            int colonIndex = headerLine.indexOf(':');
-            if (colonIndex > 0) {
-                String name = headerLine.substring(0, colonIndex).trim();
-                String value = headerLine.substring(colonIndex + 1).trim();
-                builder.addHeader(name, value);
-            }
+        try {
+            return java.net.URLDecoder.decode(value, "UTF-8");
+        } catch (IllegalArgumentException e) {
+            return value.replaceAll("%(?![0-9a-fA-F]{2})", "%25");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("UTF-8 is unsupported", e);
         }
     }
 

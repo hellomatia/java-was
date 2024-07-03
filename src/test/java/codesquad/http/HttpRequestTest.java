@@ -135,7 +135,7 @@ class HttpRequestTest {
     @Test
     void 특수문자가_포함된_쿼리_파라미터_파싱() throws IOException {
         String requestString =
-                "GET /search?q=hello+world&special=%21%40%23%24%25 HTTP/1.1\r\n" +
+                "GET /search?q=hello+world&special=%21%40%23%24 HTTP/1.1\r\n" +
                         "Host: example.com\r\n" +
                         "\r\n";
 
@@ -144,7 +144,23 @@ class HttpRequestTest {
 
         assertEquals("/search", request.getPath());
         assertEquals("hello world", request.getQueryParam("q"));
-        assertEquals("!@#$%", request.getQueryParam("special"));
+        assertEquals("!@#$", request.getQueryParam("special"));
+    }
+
+    @Test
+    void 불완전한_URL_인코딩_처리() throws IOException {
+        String requestString =
+                "GET /path?incomplete=%&valid=test&another=%2 HTTP/1.1\r\n" +
+                        "Host: example.com\r\n" +
+                        "\r\n";
+
+        InputStream inputStream = new ByteArrayInputStream(requestString.getBytes());
+        HttpRequest request = Http11Parser.parse(inputStream);
+
+        assertEquals("/path", request.getPath());
+        assertEquals("%", request.getQueryParam("incomplete"));
+        assertEquals("test", request.getQueryParam("valid"));
+        assertEquals("%2", request.getQueryParam("another"));
     }
 
     @Test
