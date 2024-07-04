@@ -25,7 +25,7 @@ public class StaticFileHandler extends AbstractRequestHandler {
 
         try {
             byte[] fileContent = readFileToByteArray(file);
-            String mimeType = ContentType.getMimeType(file.getName());
+            String mimeType = ContentType.getMimeTypeFromFilePath(file.getName());
 
             return ok(new String(fileContent))
                     .addHeader("Content-Type", mimeType)

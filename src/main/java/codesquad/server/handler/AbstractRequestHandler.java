@@ -1,5 +1,6 @@
 package codesquad.server.handler;
 
+import codesquad.server.http.ContentType;
 import codesquad.server.http.HttpResponse;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,7 @@ public abstract class AbstractRequestHandler implements RequestHandler {
         return HttpResponse.builder()
                 .statusCode(404)
                 .statusText("Not Found")
-                .addHeader("Content-Type", "text/html")
+                .addHeader("Content-Type", ContentType.HTML.getMimeType())
                 .body(errorContent);
     }
 
@@ -28,17 +29,29 @@ public abstract class AbstractRequestHandler implements RequestHandler {
         return HttpResponse.builder()
                 .statusCode(500)
                 .statusText("Internal Server Error")
-                .addHeader("Content-Type", "text/html")
+                .addHeader("Content-Type", ContentType.HTML.getMimeType())
                 .body(errorContent);
     }
 
     private String readErrorPage(int errorCode) {
-        String errorPagePath = ERROR_PAGE_PATH + errorCode + ".html";
+        String errorPagePath = ERROR_PAGE_PATH + errorCode + "." + ContentType.HTML.getExtension();
         try {
-            File errorFile = new File(getClass().getResource(errorPagePath).getFile());
-            return new String(readFileToByteArray(errorFile));
-        } catch (IOException | NullPointerException e) {
+            return readFileContent(errorPagePath);
+        } catch (NullPointerException e) {
             return "<html><body><h1>404 Not Found</h1></body></html>";
+        }
+    }
+
+    protected String readFileContent(String filePath) {
+        try {
+            File file = new File(getClass().getResource(filePath).getFile());
+            if (!file.exists() || file.isDirectory()) {
+                return null;
+            }
+            byte[] fileContent = readFileToByteArray(file);
+            return new String(fileContent, "UTF-8");
+        } catch (IOException | NullPointerException e) {
+            return null;
         }
     }
 }
