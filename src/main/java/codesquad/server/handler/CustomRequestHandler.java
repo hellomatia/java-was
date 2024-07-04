@@ -3,9 +3,9 @@ package codesquad.server.handler;
 import codesquad.server.http.HttpRequest;
 
 public abstract class CustomRequestHandler extends AbstractRequestHandler {
-    abstract String getMethod();
+    protected abstract String getMethod();
 
-    abstract String getPath();
+    protected abstract String getPath();
 
     @Override
     public boolean canHandle(HttpRequest request) {
