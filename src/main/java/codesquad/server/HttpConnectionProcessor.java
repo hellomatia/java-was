@@ -41,7 +41,7 @@ class HttpConnectionProcessor implements Runnable {
     }
 
     private static void sendResponse(OutputStream out, HttpResponse response) throws IOException {
-        out.write(response.toString().getBytes());
+        out.write(response.getBytes());
         out.flush();
     }
 }

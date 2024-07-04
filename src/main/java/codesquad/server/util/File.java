@@ -2,59 +2,101 @@ package codesquad.server.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarFile;
 
 public class File {
     private static final Logger logger = LoggerFactory.getLogger(File.class);
-    private static final String STATIC_PATH = "/static";
+    private static final String STATIC_PATH = "static/";
 
     private File() {
     }
 
-    public static Map<String, java.io.File> loadStaticFiles() {
-        Map<String, java.io.File> staticFiles = new HashMap<>();
-        URL resourceUrl = File.class.getResource(STATIC_PATH);
-        if (resourceUrl == null) {
+    public static Map<String, byte[]> loadStaticFiles() {
+        Map<String, byte[]> staticFiles = new HashMap<>();
+        URL url = File.class.getClassLoader().getResource(STATIC_PATH);
+
+        if (url == null) {
             logger.error("Static resource directory not found");
             return staticFiles;
         }
 
-        java.io.File resourceDir = new java.io.File(resourceUrl.getFile());
-        if (!resourceDir.exists() || !resourceDir.isDirectory()) {
-            logger.error("Static resource path is not a directory");
+        URI uri;
+        try {
+            uri = url.toURI();
+        } catch (URISyntaxException e) {
+            logger.error("Invalid URI for static resources", e);
             return staticFiles;
         }
 
-        loadFilesRecursively(resourceDir, "", staticFiles);
+        String protocol = uri.getScheme();
+        if ("jar".equals(protocol)) {
+            loadFromJar(staticFiles);
+        } else {
+            loadFromFileSystem(new java.io.File(uri), staticFiles);
+        }
+
+        logger.info("Loaded {} static files", staticFiles);
         return staticFiles;
     }
 
-    private static void loadFilesRecursively(java.io.File directory, String path, Map<String, java.io.File> staticFiles) {
-        java.io.File[] files = directory.listFiles();
-        if (files == null) return;
+    private static void loadFromJar(Map<String, byte[]> staticFiles) {
+        try {
+            URI uri = File.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            try (JarFile jarFile = new JarFile(new java.io.File(uri))) {
+                jarFile.entries().asIterator().forEachRemaining(entry -> {
+                    if (!entry.isDirectory() && entry.getName().startsWith(STATIC_PATH)) {
+                        try (InputStream is = jarFile.getInputStream(entry)) {
+                            String key = entry.getName().substring(STATIC_PATH.length());
+                            if (key.isEmpty()) {
+                                key = "/";
+                            } else if (!key.startsWith("/")) {
+                                key = "/" + key;
+                            }
+                            staticFiles.put(key, readInputStreamToByteArray(is));
+                        } catch (IOException e) {
+                            logger.error("Error reading file from JAR: {}", entry.getName(), e);
+                        }
+                    }
+                });
+            }
+        } catch (URISyntaxException | IOException e) {
+            logger.error("Error reading JAR file", e);
+        }
+    }
 
-        for (java.io.File file : files) {
-            String currentPath = path + "/" + file.getName();
-            if (file.isDirectory()) {
-                loadFilesRecursively(file, currentPath, staticFiles);
-            } else {
-                staticFiles.put(currentPath, file);
+    private static void loadFromFileSystem(java.io.File directory, Map<String, byte[]> staticFiles) {
+        loadFromFileSystemRecursively(directory, "", staticFiles);
+    }
+
+    private static void loadFromFileSystemRecursively(java.io.File directory, String path, Map<String, byte[]> staticFiles) {
+        java.io.File[] files = directory.listFiles();
+        if (files != null) {
+            for (java.io.File file : files) {
+                String relativePath = path + "/" + file.getName();
+                if (file.isDirectory()) {
+                    loadFromFileSystemRecursively(file, relativePath, staticFiles);
+                } else {
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        staticFiles.put(relativePath, readInputStreamToByteArray(fis));
+                    } catch (IOException e) {
+                        logger.error("Error reading file: {}", file.getPath(), e);
+                    }
+                }
             }
         }
     }
 
-    public static byte[] readFileToByteArray(java.io.File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file);
-             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+    public static byte[] readInputStreamToByteArray(InputStream is) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[1024];
             int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
+            while ((bytesRead = is.read(buffer)) != -1) {
                 bos.write(buffer, 0, bytesRead);
             }
             return bos.toByteArray();

@@ -3,14 +3,11 @@ package codesquad.server.handler;
 import codesquad.server.http.ContentType;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import static codesquad.server.util.File.loadStaticFiles;
-import static codesquad.server.util.File.readFileToByteArray;
 
 public class StaticFileHandler extends AbstractRequestHandler {
-    private final Map<String, File> staticFiles;
+    private final Map<String, byte[]> staticFiles;
 
     public StaticFileHandler() {
         this.staticFiles = loadStaticFiles();
@@ -18,22 +15,17 @@ public class StaticFileHandler extends AbstractRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        File file = staticFiles.get(request.getPath());
-        if (file == null || !file.exists() || file.isDirectory()) {
+        byte[] fileContent = staticFiles.get(request.getPath());
+        if (fileContent == null) {
             return notFound().build();
         }
 
-        try {
-            byte[] fileContent = readFileToByteArray(file);
-            String mimeType = ContentType.getMimeTypeFromFilePath(file.getName());
+        String mimeType = ContentType.getMimeTypeFromFilePath(request.getPath());
 
-            return ok(new String(fileContent))
-                    .addHeader("Content-Type", mimeType)
-                    .addHeader("Content-Length", String.valueOf(fileContent.length))
-                    .build();
-        } catch (IOException e) {
-            return internalServerError().build();
-        }
+        return ok(fileContent)
+                .addHeader("Content-Type", mimeType)
+                .addHeader("Content-Length", String.valueOf(fileContent.length))
+                .build();
     }
 
     @Override
