@@ -14,13 +14,13 @@ public class Main {
     private static final int THREAD_POOL_SIZE = 10; // 스레드 풀 크기 설정
 
     public static void main(String[] args) throws IOException {
-        Router router = Router.getInstance();
+        RequestDispatcher requestDispatcher = RequestDispatcher.getInstance();
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             logger.debug("Listening for connection on port {} ....", PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                executor.execute(new ClientHandler(clientSocket, router));
+                executor.execute(new HttpConnectionProcessor(clientSocket, requestDispatcher));
             }
         } finally {
             executor.shutdown();

@@ -8,14 +8,14 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 
-class ClientHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+class HttpConnectionProcessor implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(HttpConnectionProcessor.class);
     private final Socket clientSocket;
-    private final Router router;
+    private final RequestDispatcher requestDispatcher;
 
-    public ClientHandler(Socket socket, Router router) {
+    public HttpConnectionProcessor(Socket socket, RequestDispatcher requestDispatcher) {
         this.clientSocket = socket;
-        this.router = router;
+        this.requestDispatcher = requestDispatcher;
     }
 
     @Override
@@ -27,7 +27,7 @@ class ClientHandler implements Runnable {
             logger.debug("Client connected");
             HttpRequest request = Http11Parser.parse(in);
             logger.debug("Client received: " + request);
-            HttpResponse response = router.handleRequest(request);
+            HttpResponse response = requestDispatcher.handleRequest(request);
             sendResponse(out, response);
         } catch (Exception e) {
             logger.error("Error handling client request", e);

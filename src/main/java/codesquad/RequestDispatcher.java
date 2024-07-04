@@ -9,20 +9,20 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Router {
+public class RequestDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    private static Router instance;
+    private static RequestDispatcher instance;
     private final List<RequestHandler> requestHandlers;
     private final StaticFileHandler staticFileHandler;
 
-    private Router() {
+    private RequestDispatcher() {
         requestHandlers = new CopyOnWriteArrayList<>();
         staticFileHandler = new StaticFileHandler();
     }
 
-    public static synchronized Router getInstance() {
+    public static synchronized RequestDispatcher getInstance() {
         if (instance == null) {
-            instance = new Router();
+            instance = new RequestDispatcher();
         }
         return instance;
     }
