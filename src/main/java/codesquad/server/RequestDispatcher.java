@@ -1,9 +1,9 @@
 package codesquad.server;
 
-import codesquad.handler.RequestHandler;
-import codesquad.handler.StaticFileHandler;
-import codesquad.http.HttpRequest;
-import codesquad.http.HttpResponse;
+import codesquad.server.handler.RequestHandler;
+import codesquad.server.handler.StaticFileHandler;
+import codesquad.server.http.HttpRequest;
+import codesquad.server.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;

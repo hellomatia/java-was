@@ -1,4 +1,4 @@
-package codesquad.http;
+package codesquad.server.http;
 
 import java.io.*;
 import java.util.HashMap;

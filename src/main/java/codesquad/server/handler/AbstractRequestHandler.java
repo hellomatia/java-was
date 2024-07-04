@@ -1,10 +1,10 @@
-package codesquad.handler;
+package codesquad.server.handler;
 
-import codesquad.http.HttpResponse;
+import codesquad.server.http.HttpResponse;
 import java.io.File;
 import java.io.IOException;
-import static codesquad.handler.Constants.ERROR_PAGE_PATH;
-import static codesquad.util.File.readFileToByteArray;
+import static codesquad.server.handler.Constants.ERROR_PAGE_PATH;
+import static codesquad.server.util.File.readFileToByteArray;
 
 public abstract class AbstractRequestHandler implements RequestHandler {
     protected HttpResponse.Builder ok(String body) {

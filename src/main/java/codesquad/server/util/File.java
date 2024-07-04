@@ -1,4 +1,4 @@
-package codesquad.util;
+package codesquad.server.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

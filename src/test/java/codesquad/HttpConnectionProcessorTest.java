@@ -1,4 +1,4 @@
-package codesquad;
+package codesquad.server;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

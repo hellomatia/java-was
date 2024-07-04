@@ -1,13 +1,13 @@
-package codesquad.handler;
+package codesquad.server.handler;
 
-import codesquad.http.ContentType;
-import codesquad.http.HttpRequest;
-import codesquad.http.HttpResponse;
+import codesquad.server.http.ContentType;
+import codesquad.server.http.HttpRequest;
+import codesquad.server.http.HttpResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import static codesquad.util.File.loadStaticFiles;
-import static codesquad.util.File.readFileToByteArray;
+import static codesquad.server.util.File.loadStaticFiles;
+import static codesquad.server.util.File.readFileToByteArray;
 
 public class StaticFileHandler extends AbstractRequestHandler {
     private final Map<String, File> staticFiles;

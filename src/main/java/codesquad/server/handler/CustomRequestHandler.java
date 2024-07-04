@@ -1,6 +1,6 @@
-package codesquad.handler;
+package codesquad.server.handler;
 
-import codesquad.http.HttpRequest;
+import codesquad.server.http.HttpRequest;
 
 public abstract class CustomRequestHandler extends AbstractRequestHandler {
     abstract String getMethod();
