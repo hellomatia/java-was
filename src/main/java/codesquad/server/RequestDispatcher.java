@@ -1,4 +1,4 @@
-package codesquad;
+package codesquad.server;
 
 import codesquad.handler.RequestHandler;
 import codesquad.handler.StaticFileHandler;

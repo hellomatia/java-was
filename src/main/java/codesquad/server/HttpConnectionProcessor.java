@@ -1,8 +1,8 @@
-package codesquad;
+package codesquad.server;
 
-import codesquad.http.Http11Parser;
-import codesquad.http.HttpRequest;
-import codesquad.http.HttpResponse;
+import codesquad.server.http.Http11Parser;
+import codesquad.server.http.HttpRequest;
+import codesquad.server.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.*;
