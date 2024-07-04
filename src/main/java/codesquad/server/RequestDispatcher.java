@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RequestDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger logger = LoggerFactory.getLogger(Server.class);
     private static RequestDispatcher instance;
     private final List<RequestHandler> requestHandlers;
     private final StaticFileHandler staticFileHandler;
