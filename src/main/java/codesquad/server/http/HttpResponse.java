@@ -1,4 +1,4 @@
-package codesquad.http;
+package codesquad.server.http;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,7 @@ public class HttpResponse {
     private final int statusCode;
     private final String statusText;
     private final Map<String, String> headers;
-    private final String body;
+    private final byte[] body;
 
     private HttpResponse(Builder builder) {
         this.version = builder.version;
@@ -34,8 +34,30 @@ public class HttpResponse {
         return headers;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
+    }
+
+    public byte[] getBytes() {
+        StringBuilder response = new StringBuilder();
+        response.append(version).append(" ")
+                .append(statusCode).append(" ")
+                .append(statusText).append("\r\n");
+
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            response.append(header.getKey()).append(": ")
+                    .append(header.getValue()).append("\r\n");
+        }
+
+        response.append("\r\n");
+
+        byte[] headerBytes = response.toString().getBytes();
+        byte[] responseBytes = new byte[headerBytes.length + body.length];
+
+        System.arraycopy(headerBytes, 0, responseBytes, 0, headerBytes.length);
+        System.arraycopy(body, 0, responseBytes, headerBytes.length, body.length);
+
+        return responseBytes;
     }
 
     @Override
@@ -51,7 +73,10 @@ public class HttpResponse {
         }
 
         response.append("\r\n");
-        response.append(body);
+
+        if (body != null && body.length > 0) {
+            response.append(new String(body)); // Convert byte[] to String for display purposes
+        }
 
         return response.toString();
     }
@@ -61,7 +86,7 @@ public class HttpResponse {
         private int statusCode = 200;
         private String statusText = "OK";
         private Map<String, String> headers = new HashMap<>();
-        private String body = "";
+        private byte[] body = new byte[0];
 
         public Builder version(String version) {
             this.version = version;
@@ -83,7 +108,7 @@ public class HttpResponse {
             return this;
         }
 
-        public Builder body(String body) {
+        public Builder body(byte[] body) {
             this.body = body;
             return this;
         }

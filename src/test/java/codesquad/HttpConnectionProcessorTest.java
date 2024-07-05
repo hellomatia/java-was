@@ -1,4 +1,4 @@
-package codesquad;
+package codesquad.server;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,16 +8,16 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClientHandlerTest {
+class HttpConnectionProcessorTest {
     private TestSocket testSocket;
-    private Router router;
-    private ClientHandler clientHandler;
+    private RequestDispatcher requestDispatcher;
+    private HttpConnectionProcessor httpConnectionProcessor;
 
     @BeforeEach
     void setUp() {
         testSocket = new TestSocket();
-        router = Router.getInstance();
-        clientHandler = new ClientHandler(testSocket, router);
+        requestDispatcher = RequestDispatcher.getInstance();
+        httpConnectionProcessor = new HttpConnectionProcessor(testSocket, requestDispatcher);
     }
 
     @Test
@@ -32,7 +32,7 @@ class ClientHandlerTest {
         String fileHash = getFileHash(file);
 
         // Act
-        clientHandler.run();
+        httpConnectionProcessor.run();
 
         // Assert
         String response = testSocket.getOutputString();

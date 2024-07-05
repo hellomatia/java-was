@@ -1,4 +1,4 @@
-package codesquad.http;
+package codesquad.server.http;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +12,7 @@ class HttpResponseTest {
         assertEquals(200, response.getStatusCode());
         assertEquals("OK", response.getStatusText());
         assertTrue(response.getHeaders().isEmpty());
-        assertEquals("", response.getBody());
+        assertEquals("", new String(response.getBody()));
     }
 
     @Test
@@ -22,14 +22,14 @@ class HttpResponseTest {
                 .statusCode(404)
                 .statusText("Not Found")
                 .addHeader("Content-Type", "text/plain")
-                .body("Resource not found")
+                .body("Resource not found".getBytes())
                 .build();
 
         assertEquals("HTTP/2.0", response.getVersion());
         assertEquals(404, response.getStatusCode());
         assertEquals("Not Found", response.getStatusText());
         assertEquals("text/plain", response.getHeaders().get("Content-Type"));
-        assertEquals("Resource not found", response.getBody());
+        assertEquals("Resource not found", new String(response.getBody()));
     }
 
     @Test
@@ -50,7 +50,7 @@ class HttpResponseTest {
                 .statusCode(201)
                 .statusText("Created")
                 .addHeader("Location", "/resource/123")
-                .body("{\"id\":123}")
+                .body("{\"id\":123}".getBytes())
                 .build();
 
         String expectedString = "HTTP/1.1 201 Created\r\n" +
