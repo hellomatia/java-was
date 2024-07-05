@@ -1,4 +1,4 @@
-package codesquad.domain;
+package codesquad.domain.home;
 
 import codesquad.server.handler.CustomRequestHandler;
 import codesquad.server.http.HttpRequest;

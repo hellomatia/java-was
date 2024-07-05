@@ -51,27 +51,22 @@ public class Http11Parser {
         builder.path(pathParts[0]);
 
         if (pathParts.length > 1) {
-            Map<String, String> queryParams = parseQueryParams(pathParts[1]);
-            builder.queryParams(queryParams);
-        } else {
-            builder.queryParams(new HashMap<>());
+            parseQueryParams(pathParts[1], builder);
         }
     }
 
-    private static Map<String, String> parseQueryParams(String queryString) {
-        Map<String, String> queryParams = new HashMap<>();
+    private static void parseQueryParams(String queryString, HttpRequest.Builder builder) {
         String[] pairs = queryString.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
             if (idx > 0) {
                 String key = urlDecode(pair.substring(0, idx));
                 String value = idx < pair.length() - 1 ? urlDecode(pair.substring(idx + 1)) : "";
-                queryParams.put(key, value);
+                builder.addQueryParam(key, value);
             } else {
-                queryParams.put(urlDecode(pair), "");
+                builder.addQueryParam(urlDecode(pair), "");
             }
         }
-        return queryParams;
     }
 
     private static String urlDecode(String value) {

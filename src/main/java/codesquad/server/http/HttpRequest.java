@@ -20,13 +20,21 @@ public class HttpRequest {
         this.body = builder.body;
     }
 
-    public String getMethod() { return method; }
+    public String getMethod() {
+        return method;
+    }
 
-    public String getPath() { return path; }
+    public String getPath() {
+        return path;
+    }
 
-    public String getVersion() { return version; }
+    public String getVersion() {
+        return version;
+    }
 
-    public Map<String, String> getHeaders() { return headers; }
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
 
     public String getQueryParam(String name) {
         return queryParams.get(name);
@@ -82,8 +90,8 @@ public class HttpRequest {
             return this.headers.get(name);
         }
 
-        public Builder queryParams(Map<String, String> queryParams) {
-            this.queryParams = queryParams;
+        public Builder addQueryParam(String name, String value) {
+            this.queryParams.put(name, value);
             return this;
         }
 

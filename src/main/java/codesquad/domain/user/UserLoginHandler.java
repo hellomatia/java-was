@@ -5,6 +5,12 @@ import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 
 public class UserLoginHandler extends CustomRequestHandler {
+    private final UserRepository userRepository;
+
+    public UserLoginHandler(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Override
     protected String getMethod() {
         return "GET";
