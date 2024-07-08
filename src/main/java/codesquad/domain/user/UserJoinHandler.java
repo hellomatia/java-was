@@ -39,6 +39,6 @@ public class UserJoinHandler extends CustomRequestHandler {
         User user = new User(name, password, userId, email);
         long id = userRepository.join(user);
         logger.debug("User id: {} joined, User info: {}", id, user);
-        return ok(readFileContent("/static/registration/success.html")).build();
+        return redirect("/index.html").build();
     }
 }
