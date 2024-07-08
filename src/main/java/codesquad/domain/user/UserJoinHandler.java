@@ -5,8 +5,11 @@ import codesquad.server.Server;
 import codesquad.server.handler.CustomRequestHandler;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
+import codesquad.server.http.parser.UrlEncodedBodyParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class UserJoinHandler extends CustomRequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
@@ -18,7 +21,7 @@ public class UserJoinHandler extends CustomRequestHandler {
 
     @Override
     protected String getMethod() {
-        return "GET";
+        return "POST";
     }
 
     @Override
@@ -28,10 +31,11 @@ public class UserJoinHandler extends CustomRequestHandler {
 
     @Override
     public HttpResponse handle(HttpRequest request) {
-        String name = request.getQueryParam("name");
-        String password = request.getQueryParam("password");
-        String userId = request.getQueryParam("userId");
-        String email = request.getQueryParam("email");
+        Map<String, String> params = UrlEncodedBodyParser.parse(request.getBody());
+        String name = params.get("name");
+        String email = params.get("email");
+        String password = params.get("password");
+        String userId = params.get("userId");
         User user = new User(name, password, userId, email);
         long id = userRepository.join(user);
         logger.debug("User id: {} joined, User info: {}", id, user);

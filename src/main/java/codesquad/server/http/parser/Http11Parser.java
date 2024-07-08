@@ -1,8 +1,7 @@
-package codesquad.server.http;
+package codesquad.server.http.parser;
 
+import codesquad.server.http.HttpRequest;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Http11Parser {
     private Http11Parser() {
