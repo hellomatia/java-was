@@ -8,7 +8,11 @@ public class DataBase {
     private DataBase() {
     }
 
-    public static long addUser(User user) {
-        return userRepository.add(user);
+    public static void addUser(User user) {
+        userRepository.add(user);
+    }
+
+    public static User findUserByUserId(String userId) {
+        return userRepository.findByUserId(userId);
     }
 }
