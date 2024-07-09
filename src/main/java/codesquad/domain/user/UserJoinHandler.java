@@ -1,5 +1,7 @@
 package codesquad.domain.user;
 
+import codesquad.database.DataBase;
+import codesquad.database.UserRepository;
 import codesquad.domain.user.model.User;
 import codesquad.server.Server;
 import codesquad.server.handler.CustomRequestHandler;
@@ -15,10 +17,8 @@ import java.util.Map;
 @Handler("/user/create")
 public class UserJoinHandler extends CustomRequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
-    private final UserRepository userRepository;
 
     public UserJoinHandler() {
-        this.userRepository = UserRepository.INSTANCE;
     }
 
     @HttpMethod("POST")
@@ -29,7 +29,7 @@ public class UserJoinHandler extends CustomRequestHandler {
         String password = params.get("password");
         String userId = params.get("userId");
         User user = new User(name, password, userId, email);
-        long id = userRepository.join(user);
+        long id = DataBase.addUser(user);
         logger.debug("User id: {} joined, User info: {}", id, user);
         return redirect("/index.html").build();
     }

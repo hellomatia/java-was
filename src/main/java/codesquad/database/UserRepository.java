@@ -1,4 +1,4 @@
-package codesquad.domain.user;
+package codesquad.database;
 
 import codesquad.domain.user.model.User;
 
@@ -14,7 +14,7 @@ public class UserRepository {
         users = new ConcurrentHashMap<>();
     }
 
-    public Long join(User user) {
+    public Long add(User user) {
         ++id;
         users.put(id, user);
         return id;

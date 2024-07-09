@@ -1,5 +1,6 @@
 package codesquad.domain.user;
 
+import codesquad.database.UserRepository;
 import codesquad.server.handler.CustomRequestHandler;
 import codesquad.server.handler.annotation.Handler;
 import codesquad.server.handler.annotation.HttpMethod;
@@ -8,10 +9,8 @@ import codesquad.server.http.HttpResponse;
 
 @Handler("/login")
 public class UserLoginHandler extends CustomRequestHandler {
-    private final UserRepository userRepository;
 
     public UserLoginHandler() {
-        this.userRepository = UserRepository.INSTANCE;
     }
 
     @HttpMethod("GET")
