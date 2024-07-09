@@ -37,8 +37,7 @@ public class UserLoginHandler extends CustomRequestHandler {
         Session session = SessionManager.createSession();
         session.setAttribute("userInfo", user);
         return redirect("/")
-                .addCookie("sid", session.getId())
-                .addCookie("Path", "/")
+                .addCookie("sid", session.getId(), 30 * 60, true)
                 .build();
     }
 }
