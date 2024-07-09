@@ -2,6 +2,7 @@ package codesquad.server.http;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpResponse {
     private final String version;
@@ -86,6 +87,7 @@ public class HttpResponse {
         private int statusCode = 200;
         private String statusText = "OK";
         private Map<String, String> headers = new HashMap<>();
+        private Map<String, String> cookies = new HashMap<>();
         private byte[] body = new byte[0];
 
         public Builder version(String version) {
@@ -108,12 +110,21 @@ public class HttpResponse {
             return this;
         }
 
+        public Builder addCookie(String name, String value) {
+            this.cookies.put(name, value);
+            return this;
+        }
+
         public Builder body(byte[] body) {
             this.body = body;
             return this;
         }
 
         public HttpResponse build() {
+            String cookieString = cookies.entrySet().stream()
+                    .map(entry -> entry.getKey() + "=" + entry.getValue())
+                    .collect(Collectors.joining("; "));
+            this.headers.put("Set-Cookie", cookieString);
             return new HttpResponse(this);
         }
     }

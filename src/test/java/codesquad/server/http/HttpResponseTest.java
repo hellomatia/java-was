@@ -45,6 +45,16 @@ class HttpResponseTest {
     }
 
     @Test
+    void 여러_쿠키_추가() {
+        HttpResponse response = HttpResponse.builder()
+                .addCookie("sid", "12")
+                .addCookie("path", "/")
+                .build();
+
+        assertEquals("path=/; sid=12", response.getHeaders().get("Set-Cookie"));
+    }
+
+    @Test
     void toString_메소드_검증() {
         HttpResponse response = HttpResponse.builder()
                 .statusCode(201)
