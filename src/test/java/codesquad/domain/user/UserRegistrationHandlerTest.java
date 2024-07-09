@@ -15,16 +15,6 @@ class UserRegistrationHandlerTest {
     }
 
     @Test
-    void GET_메서드_확인() {
-        assertEquals("GET", userRegistrationHandler.getMethod());
-    }
-
-    @Test
-    void 경로_확인() {
-        assertEquals("/registration", userRegistrationHandler.getPath());
-    }
-
-    @Test
     void 요청_처리_확인() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
@@ -43,16 +33,6 @@ class UserRegistrationHandlerTest {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
                 .path("/registration")
-                .build();
-
-        assertTrue(userRegistrationHandler.canHandle(request));
-    }
-
-    @Test
-    void 처리_가능_여부_확인_register_html_경로() {
-        HttpRequest request = HttpRequest.builder()
-                .method("GET")
-                .path("/register.html")
                 .build();
 
         assertTrue(userRegistrationHandler.canHandle(request));

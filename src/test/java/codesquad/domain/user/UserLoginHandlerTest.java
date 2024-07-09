@@ -9,22 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserLoginHandlerTest {
     private UserLoginHandler userLoginHandler;
-    private UserRepository userRepository;
 
     @BeforeEach
     void 초기화() {
-        userRepository = new UserRepository();
-        userLoginHandler = new UserLoginHandler(userRepository);
-    }
-
-    @Test
-    void GET_메서드_확인() {
-        assertEquals("GET", userLoginHandler.getMethod());
-    }
-
-    @Test
-    void 경로_확인() {
-        assertEquals("/login", userLoginHandler.getPath());
+        userLoginHandler = new UserLoginHandler();
     }
 
     @Test

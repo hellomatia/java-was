@@ -6,10 +6,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UserRepository {
+    public static final UserRepository INSTANCE = new UserRepository();
     private long id;
     private final Map<Long, User> users;
 
-    public UserRepository() {
+    private  UserRepository() {
         users = new ConcurrentHashMap<>();
     }
 
