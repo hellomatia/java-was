@@ -40,6 +40,22 @@ public class Http11Parser {
                 String name = headerLine.substring(0, colonIndex).trim();
                 String value = headerLine.substring(colonIndex + 1).trim();
                 builder.addHeader(name, value);
+
+                if (name.equalsIgnoreCase("Cookie")) {
+                    parseCookies(value, builder);
+                }
+            }
+        }
+    }
+
+    private static void parseCookies(String cookieHeader, HttpRequest.Builder builder) {
+        String[] cookies = cookieHeader.split(";");
+        for (String cookie : cookies) {
+            String[] parts = cookie.trim().split("=", 2);
+            if (parts.length == 2) {
+                String name = parts[0].trim();
+                String value = urlDecode(parts[1].trim());
+                builder.addCookie(name, value);
             }
         }
     }

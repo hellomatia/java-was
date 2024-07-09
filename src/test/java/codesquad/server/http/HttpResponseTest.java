@@ -51,7 +51,7 @@ class HttpResponseTest {
                 .addCookie("path", "/")
                 .build();
 
-        assertEquals("path=/; sid=12", response.getHeaders().get("Set-Cookie"));
+        assertEquals("sid=12; path=/", response.getHeaders().get("Set-Cookie"));
     }
 
     @Test
