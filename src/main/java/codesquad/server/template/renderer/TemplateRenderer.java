@@ -1,6 +1,7 @@
 package codesquad.server.template.renderer;
 
 import codesquad.server.template.element.*;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class TemplateRenderer {
             result.append(((TextElement) element).content);
         } else if (element instanceof VariableElement) {
             String varName = ((VariableElement) element).variableName;
-            Object value = data.get(varName);
+            Object value = resolveVariable(varName, data);
             result.append(value != null ? value.toString() : "");
         } else if (element instanceof IfElement) {
             renderIfElement((IfElement) element, data, result);
@@ -28,6 +29,56 @@ public class TemplateRenderer {
                 renderElement(child, data, result);
             }
         }
+    }
+
+    private Object resolveVariable(String varName, Map<String, Object> data) {
+        String[] parts = varName.split("\\.");
+        Object value = data.get(parts[0]);
+
+        for (int i = 1; i < parts.length; i++) {
+            if (value == null) {
+                return null;
+            }
+
+            String part = parts[i];
+            if (part.endsWith("()")) {
+                // 메서드 호출
+                String methodName = part.substring(0, part.length() - 2);
+                value = invokeMethod(value, methodName);
+            } else {
+                // 필드 접근
+                value = getFieldValue(value, part);
+            }
+        }
+
+        return value;
+    }
+
+    private Object invokeMethod(Object obj, String methodName) {
+        try {
+            Method method = obj.getClass().getMethod(methodName);
+            return method.invoke(obj);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Object getFieldValue(Object obj, String fieldName) {
+        try {
+            Method getter = obj.getClass().getMethod("get" + capitalize(fieldName));
+            return getter.invoke(obj);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     private void renderIfElement(IfElement ifElement, Map<String, Object> data, StringBuilder result) {
@@ -69,7 +120,7 @@ public class TemplateRenderer {
         if (parts.length == 2) {
             String left = parts[0].trim();
             String right = parts[1].trim().replaceAll("\"", "");
-            Object leftValue = data.get(left);
+            Object leftValue = resolveVariable(left, data);
             if (leftValue != null) {
                 if (leftValue instanceof Boolean) {
                     return (Boolean) leftValue == Boolean.parseBoolean(right);
