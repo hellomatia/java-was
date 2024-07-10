@@ -8,6 +8,7 @@ public class HttpRequest {
     private final String path;
     private final String version;
     private final Map<String, String> headers;
+    private final Map<String, String> cookies;
     private final Map<String, String> queryParams;
     private final String body;
 
@@ -16,7 +17,8 @@ public class HttpRequest {
         this.path = builder.path;
         this.version = builder.version;
         this.headers = Map.copyOf(builder.headers);
-        this.queryParams = new HashMap<>(builder.queryParams);
+        this.cookies = Map.copyOf(builder.cookies);
+        this.queryParams = Map.copyOf(builder.queryParams);
         this.body = builder.body;
     }
 
@@ -34,6 +36,10 @@ public class HttpRequest {
 
     public Map<String, String> getHeaders() {
         return headers;
+    }
+
+    public String getCookie(String name) {
+        return cookies.get(name);
     }
 
     public String getQueryParam(String name) {
@@ -63,6 +69,7 @@ public class HttpRequest {
         private String path;
         private String version;
         private Map<String, String> headers = new HashMap<>();
+        private Map<String, String> cookies = new HashMap<>();
         private Map<String, String> queryParams = new HashMap<>();
         private String body;
 
@@ -83,6 +90,11 @@ public class HttpRequest {
 
         public Builder addHeader(String name, String value) {
             this.headers.put(name, value);
+            return this;
+        }
+
+        public Builder addCookie(String name, String value) {
+            this.cookies.put(name, value);
             return this;
         }
 

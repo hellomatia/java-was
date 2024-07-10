@@ -1,7 +1,9 @@
 package codesquad.server.http;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpResponse {
     private final String version;
@@ -86,6 +88,7 @@ public class HttpResponse {
         private int statusCode = 200;
         private String statusText = "OK";
         private Map<String, String> headers = new HashMap<>();
+        private Map<String, Cookie> cookies = new LinkedHashMap<>();
         private byte[] body = new byte[0];
 
         public Builder version(String version) {
@@ -108,12 +111,37 @@ public class HttpResponse {
             return this;
         }
 
+        public Builder addCookie(String name, String value, int maxAge, boolean httpOnly) {
+            this.cookies.put(name, new Cookie(name, value, maxAge, httpOnly));
+            return this;
+        }
+
         public Builder body(byte[] body) {
             this.body = body;
             return this;
         }
 
         public HttpResponse build() {
+            if (!cookies.isEmpty()) {
+                cookies.values().forEach(cookie -> {
+                    StringBuilder cookieBuilder = new StringBuilder();
+                    cookieBuilder.append(cookie.name()).append("=").append(cookie.value())
+                            .append("; Path=/");
+
+                    if (cookie.maxAge() > 0) {
+                        cookieBuilder.append("; Max-Age=").append(cookie.maxAge());
+                    } else if (cookie.maxAge() == 0) {
+                        cookieBuilder.append("; Max-Age=0")
+                                .append("; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+                    }
+
+                    if (cookie.httpOnly()) {
+                        cookieBuilder.append("; HttpOnly");
+                    }
+
+                    this.headers.put("Set-Cookie", cookieBuilder.toString());
+                });
+            }
             return new HttpResponse(this);
         }
     }

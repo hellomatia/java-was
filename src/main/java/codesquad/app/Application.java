@@ -1,11 +1,5 @@
 package codesquad.app;
 
-import codesquad.domain.home.HomeHandler;
-import codesquad.domain.article.ArticleHandler;
-import codesquad.domain.user.UserJoinHandler;
-import codesquad.domain.user.UserLoginHandler;
-import codesquad.domain.user.UserRegistrationHandler;
-import codesquad.domain.user.UserRepository;
 import codesquad.server.Server;
 
 import java.io.IOException;

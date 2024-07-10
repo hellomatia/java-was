@@ -45,6 +45,15 @@ class HttpResponseTest {
     }
 
     @Test
+    void 쿠키_추가() {
+        HttpResponse response = HttpResponse.builder()
+                .addCookie("sid", "12", 30 * 60, true)
+                .build();
+
+        assertEquals("sid=12; Path=/; Max-Age=1800; HttpOnly", response.getHeaders().get("Set-Cookie"));
+    }
+
+    @Test
     void toString_메소드_검증() {
         HttpResponse response = HttpResponse.builder()
                 .statusCode(201)

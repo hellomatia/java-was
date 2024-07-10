@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../reset.css" rel="stylesheet" />
+    <link href="../global.css" rel="stylesheet" />
+    <style>
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <a href="/"><img src="../img/signiture.svg" alt="로고" /></a>
+        <ul class="header__menu">
+            <li class="header__menu__item">
+                <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
+            </li>
+            <li class="header__menu__item">
+                <a class="btn btn_ghost btn_size_s" href="/registration">
+                    회원 가입
+                </a>
+            </li>
+        </ul>
+    </header>
+    <div class="page">
+        <h2 class="page-title">로그인 실패</h2>
+        <div class="error-message">
+            아이디 또는 비밀번호가 올바르지 않습니다.
+        </div>
+        <p>
+            입력하신 정보를 다시 확인해주세요. 계속해서 문제가 발생한다면 관리자에게 문의해주세요.
+        </p>
+        <div class="action-buttons">
+            <a href="/login" class="btn btn_contained btn_size_m">다시 로그인</a>
+            <a href="/forgot-password" class="btn btn_ghost btn_size_m">비밀번호 찾기</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
