@@ -102,4 +102,14 @@ public class File {
             return bos.toByteArray();
         }
     }
+
+    public static byte[] readFileContent(String filePath) {
+        try {
+            InputStream resourceUrl = File.class.getResourceAsStream(filePath);
+            return readInputStreamToByteArray(resourceUrl);
+        } catch (IOException e) {
+            logger.error("Error reading file: {}", filePath, e);
+            return null;
+        }
+    }
 }

@@ -5,6 +5,7 @@ import codesquad.server.http.HttpResponse;
 import codesquad.server.util.File;
 import java.io.InputStream;
 import static codesquad.server.handler.Constants.ERROR_PAGE_PATH;
+import static codesquad.server.util.File.readFileContent;
 import static codesquad.server.util.File.readInputStreamToByteArray;
 
 public abstract class AbstractRequestHandler implements RequestHandler {
@@ -46,15 +47,6 @@ public abstract class AbstractRequestHandler implements RequestHandler {
             return readFileContent(errorPagePath);
         } catch (NullPointerException e) {
             return "<html><body><h1>404 Not Found</h1></body></html>".getBytes();
-        }
-    }
-
-    protected byte[] readFileContent(String filePath) {
-        try {
-            InputStream resourceUrl = File.class.getResourceAsStream(filePath);
-            return readInputStreamToByteArray(resourceUrl);
-        } catch (Exception e) {
-            return readErrorPage(500);
         }
     }
 }
