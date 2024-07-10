@@ -5,9 +5,9 @@ import codesquad.server.template.parser.TemplateParser;
 import codesquad.server.template.renderer.TemplateRenderer;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Map;
+
+import static codesquad.server.util.FileUtils.readFileContent;
 
 public class TemplateEngine {
     private final TemplateParser parser;
@@ -25,6 +25,6 @@ public class TemplateEngine {
     }
 
     private String readFile(String filePath) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(filePath)));
+        return new String(readFileContent(filePath));
     }
 }
