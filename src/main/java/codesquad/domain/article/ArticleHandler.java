@@ -5,7 +5,7 @@ import codesquad.server.handler.annotation.Handler;
 import codesquad.server.handler.annotation.HttpMethod;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
-import static codesquad.server.util.File.readFileContent;
+import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/article")
 public class ArticleHandler extends CustomRequestHandler {

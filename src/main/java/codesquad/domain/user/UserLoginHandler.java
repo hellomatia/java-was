@@ -12,7 +12,7 @@ import codesquad.server.session.Session;
 import codesquad.server.session.SessionManager;
 import java.util.Map;
 import java.util.Objects;
-import static codesquad.server.util.File.readFileContent;
+import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/login")
 public class UserLoginHandler extends CustomRequestHandler {

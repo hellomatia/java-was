@@ -6,7 +6,7 @@ import codesquad.server.handler.annotation.HttpMethod;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import codesquad.server.session.SessionManager;
-import static codesquad.server.util.File.readFileContent;
+import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/")
 public class HomeHandler extends CustomRequestHandler {
