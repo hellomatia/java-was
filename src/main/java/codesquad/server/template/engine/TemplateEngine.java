@@ -10,6 +10,8 @@ import java.util.Map;
 import static codesquad.server.util.FileUtils.readFileContent;
 
 public class TemplateEngine {
+    private static final String PREFIX = "/templates/";
+    private static final String SUFFIX = ".html";
     private final TemplateParser parser;
     private final TemplateRenderer renderer;
 
@@ -18,13 +20,13 @@ public class TemplateEngine {
         this.renderer = new TemplateRenderer();
     }
 
-    public String render(String templatePath, Map<String, Object> data) throws IOException {
-        String templateContent = readFile(templatePath);
+    public String render(String templateName, Map<String, Object> data) throws IOException {
+        String templateContent = readFile(PREFIX + templateName + SUFFIX);
         Element root = parser.parse(templateContent);
         return renderer.render(root, data);
     }
 
-    private String readFile(String filePath) throws IOException {
+    private String readFile(String filePath) {
         return new String(readFileContent(filePath));
     }
 }

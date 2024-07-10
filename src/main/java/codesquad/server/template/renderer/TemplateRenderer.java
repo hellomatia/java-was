@@ -9,7 +9,7 @@ public class TemplateRenderer {
     public String render(Element root, Map<String, Object> data) {
         StringBuilder result = new StringBuilder();
         renderElement(root, data, result);
-        return result.toString();
+        return removeEmptyLines(result.toString());
     }
 
     private void renderElement(Element element, Map<String, Object> data, StringBuilder result) {
@@ -78,5 +78,9 @@ public class TemplateRenderer {
             }
         }
         return false;
+    }
+
+    private String removeEmptyLines(String input) {
+        return input.replaceAll("(?m)^[ \t]*\r?\n", "");
     }
 }
