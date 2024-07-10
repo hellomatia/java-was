@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/reset.css" rel="stylesheet" />
+    <link href="/global.css" rel="stylesheet" />
+    <link href="/main.css" rel="stylesheet" />
+    <title>사용자 목록</title>
+    <style>
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .user-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            font-size: 14px;
+            white-space: nowrap;  /* 헤더 텍스트 줄바꿈 방지 */
+        }
+
+        .user-table td {
+            font-size: 16px;
+        }
+
+        .user-table tbody tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        .user-table tbody tr:hover {
+            background-color: #e6e6e6;
+        }
+
+        /* 각 열의 너비 조정 */
+        .user-table th:nth-child(1),
+        .user-table td:nth-child(1) {
+            width: 25%;
+        }
+
+        .user-table th:nth-child(2),
+        .user-table td:nth-child(2) {
+            width: 25%;
+        }
+
+        .user-table th:nth-child(3),
+        .user-table td:nth-child(3) {
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <a href="/"><img src="/img/signiture.svg" alt="로고" /></a>
+        <ul class="header__menu">
+            {% if isLoggedIn == true %}
+            <li class="header__menu__item">
+                <a class="btn btn_contained btn_size_s" href="/article">글쓰기</a>
+            </li>
+            <li class="header__menu__item">
+                <a id="logout-btn" class="btn btn_ghost btn_size_s" href="/logout">
+                    로그아웃
+                </a>
+            </li>
+            <li class="header__menu__item">
+                <span>{{userName}}님 환영합니다</span>
+            </li>
+            {% else %}
+            <li class="header__menu__item">
+                <a class="btn btn_contained btn_size_s" href="/login">로그인</a>
+            </li>
+            <li class="header__menu__item">
+                <a class="btn btn_ghost btn_size_s" href="/registration">
+                    회원 가입
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </header>
+    <div class="wrapper">
+        <h1 class="page-title">사용자 목록</h1>
+        <div class="user-list">
+            <table class="user-table">
+                <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>사용자 ID</th>
+                    <th>이메일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{user.name()}}</td>
+                    <td>{{user.userId()}}</td>
+                    <td>{{user.email()}}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

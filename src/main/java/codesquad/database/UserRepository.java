@@ -1,6 +1,9 @@
 package codesquad.database;
 
 import codesquad.domain.user.model.User;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,5 +22,9 @@ public class UserRepository {
 
     public User findByUserId(String userId) {
         return users.get(userId);
+    }
+
+    public List<User> findAllUsers() {
+        return new ArrayList<>(users.values());
     }
 }
