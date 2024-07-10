@@ -1,22 +1,35 @@
 package codesquad.domain.home;
 
+import codesquad.domain.user.model.User;
 import codesquad.server.handler.CustomRequestHandler;
 import codesquad.server.handler.annotation.Handler;
 import codesquad.server.handler.annotation.HttpMethod;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
+import codesquad.server.session.Session;
 import codesquad.server.session.SessionManager;
-import static codesquad.server.util.FileUtils.readFileContent;
+import codesquad.server.template.engine.TemplateEngine;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Handler("/")
 public class HomeHandler extends CustomRequestHandler {
     @HttpMethod("GET")
-    public HttpResponse showMainPage(HttpRequest request) {
+    public HttpResponse showMainPage(HttpRequest request) throws IOException {
+        TemplateEngine templateEngine = new TemplateEngine();
         String sessionId = request.getCookie("sid");
+        Map<String, Object> data = new HashMap<>();
         if (sessionId != null && SessionManager.getSession(sessionId) != null) {
-            return ok(readFileContent("/static/main/index.html")).build();
+            Session session = SessionManager.getSession(sessionId);
+            User user = (User) session.getAttribute("userInfo");
+            data.put("isLoggedIn", true);
+            data.put("userName", user.name());
+            return ok(templateEngine.render("main", data).getBytes()).build();
         } else {
-            return ok(readFileContent("/static/index.html")).build();
+            data.put("isLoggedIn", false);
+            data.put("userName", "");
+            return ok(templateEngine.render("main", data).getBytes()).build();
         }
     }
 }
