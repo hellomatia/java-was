@@ -1,6 +1,6 @@
 package codesquad.server.template.engine;
 
-import codesquad.server.template.element.TemplateStructure;
+import codesquad.server.template.element.Element;
 import codesquad.server.template.parser.TemplateParser;
 import codesquad.server.template.renderer.TemplateRenderer;
 
@@ -20,9 +20,8 @@ public class TemplateEngine {
 
     public String render(String templatePath, Map<String, Object> data) throws IOException {
         String templateContent = readFile(templatePath);
-        TemplateStructure structure = parser.parse(templateContent);
-        System.out.println("structure = " + structure);
-        return renderer.render(structure, data);
+        Element root = parser.parse(templateContent);
+        return renderer.render(root, data);
     }
 
     private String readFile(String filePath) throws IOException {

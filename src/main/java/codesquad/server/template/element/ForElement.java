@@ -1,34 +1,20 @@
 package codesquad.server.template.element;
 
-public class ForElement implements TemplateElement {
-    private final String varName;
-    private final String listName;
-    private final TemplateStructure body;
+public class ForElement extends Element {
+    public String itemName;
+    public String collectionName;
 
-    public ForElement(String varName, String listName, TemplateStructure body) {
-        this.varName = varName;
-        this.listName = listName;
-        this.body = body;
-    }
-
-    public String getVarName() {
-        return varName;
-    }
-
-    public String getListName() {
-        return listName;
-    }
-
-    public TemplateStructure getBody() {
-        return body;
+    public ForElement(String itemName, String collectionName) {
+        super("for");
+        this.itemName = itemName;
+        this.collectionName = collectionName;
     }
 
     @Override
     public String toString() {
         return "ForElement{" +
-                "varName='" + varName + '\'' +
-                ", listName='" + listName + '\'' +
-                ", body=" + body +
+                "itemName='" + itemName + '\'' +
+                ", collectionName='" + collectionName + '\'' +
                 '}';
     }
 }

@@ -1,71 +1,92 @@
 package codesquad.server.template.parser;
 
 import codesquad.server.template.element.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TemplateParser {
-    private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{\\{\\s*(.*?)\\s*\\}\\}");
-    private static final Pattern IF_PATTERN = Pattern.compile("\\{%\\s*if\\s+(.*?)\\s*%\\}(.*?)(?:\\{%\\s*else\\s*%\\}(.*?))?\\{%\\s*endif\\s*%\\}", Pattern.DOTALL);
-    private static final Pattern FOR_PATTERN = Pattern.compile("\\{%\\s*for\\s+(\\w+)\\s+in\\s+(\\w+)\\s*%\\}(.*?)\\{%\\s*endfor\\s*%\\}", Pattern.DOTALL);
-
-    public TemplateStructure parse(String template) {
-        List<TemplateElement> elements = new ArrayList<>();
-        parseElements(template, elements);
-        return new TemplateStructure(elements);
+    public static Element parse(String template) {
+        Element root = new Element("root");
+        parseRecursive(template, root);
+        return root;
     }
 
-    private void parseElements(String template, List<TemplateElement> elements) {
-        int lastIndex = 0;
-        while (lastIndex < template.length()) {
-            Matcher ifMatcher = IF_PATTERN.matcher(template);
-            Matcher forMatcher = FOR_PATTERN.matcher(template);
-            Matcher varMatcher = VARIABLE_PATTERN.matcher(template);
+    private static void parseRecursive(String template, Element parent) {
+        int start = 0;
+        while (start < template.length()) {
+            int forStart = template.indexOf("{% for ", start);
+            int ifStart = template.indexOf("{% if ", start);
+            int varStart = template.indexOf("{{", start);
 
-            int nextIndex = template.length();
-            TemplateElement nextElement = null;
-
-            if (ifMatcher.find(lastIndex) && ifMatcher.start() < nextIndex) {
-                nextIndex = ifMatcher.start();
-                nextElement = new IfElement(
-                        ifMatcher.group(1),
-                        parse(ifMatcher.group(2)),
-                        ifMatcher.group(3) != null ? parse(ifMatcher.group(3)) : null
-                );
-            }
-
-            if (forMatcher.find(lastIndex) && forMatcher.start() < nextIndex) {
-                nextIndex = forMatcher.start();
-                nextElement = new ForElement(
-                        forMatcher.group(1),
-                        forMatcher.group(2),
-                        parse(forMatcher.group(3))
-                );
-            }
-
-            if (varMatcher.find(lastIndex) && varMatcher.start() < nextIndex) {
-                nextIndex = varMatcher.start();
-                nextElement = new VariableElement(varMatcher.group(1).trim());
-            }
-
-            if (nextIndex > lastIndex) {
-                elements.add(new TextElement(template.substring(lastIndex, nextIndex)));
-            }
-
-            if (nextElement != null) {
-                elements.add(nextElement);
-                lastIndex = (nextElement instanceof IfElement) ? ifMatcher.end() :
-                        (nextElement instanceof ForElement) ? forMatcher.end() :
-                                varMatcher.end();
-            } else {
+            if (forStart == -1 && ifStart == -1 && varStart == -1) {
+                parent.addChild(new TextElement(template.substring(start)));
                 break;
             }
-        }
 
-        if (lastIndex < template.length()) {
-            elements.add(new TextElement(template.substring(lastIndex)));
+            int nextSpecialChar = Math.min(
+                    forStart != -1 ? forStart : Integer.MAX_VALUE,
+                    Math.min(ifStart != -1 ? ifStart : Integer.MAX_VALUE,
+                            varStart != -1 ? varStart : Integer.MAX_VALUE)
+            );
+
+            if (nextSpecialChar > start) {
+                parent.addChild(new TextElement(template.substring(start, nextSpecialChar)));
+            }
+
+            if (nextSpecialChar == forStart) {
+                int forEnd = template.indexOf("%}", forStart);
+                String forContent = template.substring(forStart + 7, forEnd);
+                String[] parts = forContent.split(" in ");
+                ForElement forElement = new ForElement(parts[0].trim(), parts[1].trim());
+                parent.addChild(forElement);
+
+                int endForIndex = findMatchingEndTag(template, forEnd + 2, "{% for ", "{% endfor %}");
+                parseRecursive(template.substring(forEnd + 2, endForIndex), forElement);
+                start = endForIndex + 12;
+            } else if (nextSpecialChar == ifStart) {
+                int ifEnd = template.indexOf("%}", ifStart);
+                String condition = template.substring(ifStart + 6, ifEnd);
+                IfElement ifElement = new IfElement(condition.trim());
+                parent.addChild(ifElement);
+
+                int endIfIndex = findMatchingEndTag(template, ifEnd + 2, "{% if ", "{% endif %}");
+                int elseIndex = template.indexOf("{% else %}", ifEnd);
+
+                if (elseIndex != -1 && elseIndex < endIfIndex) {
+                    parseRecursive(template.substring(ifEnd + 2, elseIndex), ifElement);
+                    Element elseElement = new Element("else");
+                    ifElement.addChild(elseElement);
+                    parseRecursive(template.substring(elseIndex + 10, endIfIndex), elseElement);
+                } else {
+                    parseRecursive(template.substring(ifEnd + 2, endIfIndex), ifElement);
+                }
+                start = endIfIndex + 11;
+            } else if (nextSpecialChar == varStart) {
+                int varEnd = template.indexOf("}}", varStart);
+                String varName = template.substring(varStart + 2, varEnd).trim();
+                parent.addChild(new VariableElement(varName));
+                start = varEnd + 2;
+            }
         }
+    }
+
+    private static int findMatchingEndTag(String template, int startIndex, String startTag, String endTag) {
+        int depth = 1;
+        int currentIndex = startIndex;
+        while (depth > 0 && currentIndex < template.length()) {
+            int nextStartTag = template.indexOf(startTag, currentIndex);
+            int nextEndTag = template.indexOf(endTag, currentIndex);
+
+            if (nextEndTag == -1) {
+                throw new RuntimeException("Missing end tag: " + endTag);
+            }
+
+            if (nextStartTag != -1 && nextStartTag < nextEndTag) {
+                depth++;
+                currentIndex = nextStartTag + startTag.length();
+            } else {
+                depth--;
+                currentIndex = nextEndTag + endTag.length();
+            }
+        }
+        return currentIndex - endTag.length();
     }
 }

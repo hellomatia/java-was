@@ -1,20 +1,17 @@
 package codesquad.server.template.element;
 
-public class TextElement implements TemplateElement {
-    private final String text;
+public class TextElement extends Element {
+    public String content;
 
-    public TextElement(String text) {
-        this.text = text;
-    }
-
-    public String getText() {
-        return text;
+    public TextElement(String content) {
+        super("text");
+        this.content = content;
     }
 
     @Override
     public String toString() {
         return "TextElement{" +
-                "text='" + text + '\'' +
+                "content='" + content + '\'' +
                 '}';
     }
 }
