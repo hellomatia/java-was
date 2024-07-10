@@ -10,6 +10,7 @@ public enum ContentType {
     PNG("png", "image/png"),
     JPEG("jpeg", "image/jpeg"),
     SVG("svg", "image/svg+xml"),
+    FORM_URLENCODED("", "application/x-www-form-urlencoded; charset=UTF-8"),
     TXT("txt", "text/plain; charset=UTF-8");
 
     private final String extension;
@@ -43,6 +44,6 @@ public enum ContentType {
     }
 
     public boolean isTextBased() {
-        return this == HTML || this == CSS || this == JS || this == TXT;
+        return this == HTML || this == CSS || this == JS || this == FORM_URLENCODED || this == TXT;
     }
 }

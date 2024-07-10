@@ -16,16 +16,6 @@ class HomeHandlerTest {
     }
 
     @Test
-    void GET_메서드_확인() {
-        assertEquals("GET", homeHandler.getMethod());
-    }
-
-    @Test
-    void 경로_확인() {
-        assertEquals("/", homeHandler.getPath());
-    }
-
-    @Test
     void 요청_처리_확인() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")

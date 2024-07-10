@@ -1,5 +1,6 @@
-package codesquad.domain.user;
+package codesquad.domain.article;
 
+import codesquad.domain.user.UserJoinHandler;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,22 +8,22 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserLoginHandlerTest {
-    private UserLoginHandler userLoginHandler;
+class ArticleHandlerTest {
+    private ArticleHandler articleHandler;
 
     @BeforeEach
     void 초기화() {
-        userLoginHandler = new UserLoginHandler();
+        articleHandler = new ArticleHandler();
     }
 
     @Test
     void 요청_처리_확인() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
-                .path("/login")
+                .path("/article")
                 .build();
 
-        HttpResponse response = userLoginHandler.handle(request);
+        HttpResponse response = articleHandler.handle(request);
 
         assertNotNull(response);
         assertTrue(new String(response.getBody()).contains("<html>"));
@@ -33,20 +34,20 @@ class UserLoginHandlerTest {
     void 처리_가능_여부_확인() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
-                .path("/login")
+                .path("/article")
                 .build();
 
-        assertTrue(userLoginHandler.canHandle(request));
+        assertTrue(articleHandler.canHandle(request));
     }
 
     @Test
     void 처리_불가능_여부_확인_잘못된_메서드() {
         HttpRequest request = HttpRequest.builder()
                 .method("POST")
-                .path("/login")
+                .path("/article")
                 .build();
 
-        assertFalse(userLoginHandler.canHandle(request));
+        assertFalse(articleHandler.canHandle(request));
     }
 
     @Test
@@ -56,6 +57,6 @@ class UserLoginHandlerTest {
                 .path("/wrong-path")
                 .build();
 
-        assertFalse(userLoginHandler.canHandle(request));
+        assertFalse(articleHandler.canHandle(request));
     }
 }

@@ -15,6 +15,13 @@ public abstract class AbstractRequestHandler implements RequestHandler {
                 .body(body);
     }
 
+    protected HttpResponse.Builder redirect(String url) {
+        return HttpResponse.builder()
+                .statusCode(302)
+                .statusText("Found")
+                .addHeader("Location", url);
+    }
+
     protected HttpResponse.Builder notFound() {
         byte[] errorContent = readErrorPage(404);
         return HttpResponse.builder()
