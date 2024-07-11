@@ -3,10 +3,12 @@ package codesquad.server.core;
 import codesquad.server.handler.StaticFileHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.*;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpConnectionProcessorTest {

@@ -1,9 +1,11 @@
 package codesquad.server.template.renderer;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import codesquad.server.template.element.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

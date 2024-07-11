@@ -3,8 +3,10 @@ package codesquad.server.template.engine;
 import codesquad.server.template.element.Element;
 import codesquad.server.template.parser.TemplateParser;
 import codesquad.server.template.renderer.TemplateRenderer;
+
 import java.io.IOException;
 import java.util.Map;
+
 import static codesquad.server.util.FileUtils.readFileContent;
 
 public class TemplateEngine {

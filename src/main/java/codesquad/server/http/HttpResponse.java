@@ -3,7 +3,6 @@ package codesquad.server.http;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpResponse {
     private final String version;

@@ -9,6 +9,7 @@ import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import codesquad.server.session.SessionManager;
 import codesquad.server.template.engine.TemplateEngine;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,8 @@ public class UserListHandler extends CustomRequestHandler {
     @HttpMethod("GET")
     public HttpResponse shoUserList(HttpRequest request) throws IOException {
         String sessionId = request.getCookie("sid");
-        if (sessionId == null || SessionManager.getSession(sessionId) == null) {;
+        if (sessionId == null || SessionManager.getSession(sessionId) == null) {
+            ;
             return redirect("/login").build();
         }
         Map<String, Object> data = new HashMap<>();

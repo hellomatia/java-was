@@ -1,6 +1,7 @@
 package codesquad.app;
 
 import codesquad.server.core.Server;
+
 import java.io.IOException;
 
 public class Application {

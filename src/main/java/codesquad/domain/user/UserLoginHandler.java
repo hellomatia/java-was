@@ -10,8 +10,10 @@ import codesquad.server.http.HttpResponse;
 import codesquad.server.http.parser.UrlEncodedBodyParser;
 import codesquad.server.session.Session;
 import codesquad.server.session.SessionManager;
+
 import java.util.Map;
 import java.util.Objects;
+
 import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/login")

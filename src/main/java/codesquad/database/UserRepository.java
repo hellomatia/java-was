@@ -11,7 +11,7 @@ public class UserRepository {
     public static final UserRepository INSTANCE = new UserRepository();
     private final Map<String, User> users;
 
-    private  UserRepository() {
+    private UserRepository() {
         users = new ConcurrentHashMap<>();
         users.put("admin", new User("admin", "admin", "admin", "code.@s.com"));
     }

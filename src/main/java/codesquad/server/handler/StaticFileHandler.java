@@ -3,7 +3,9 @@ package codesquad.server.handler;
 import codesquad.server.http.ContentType;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
+
 import java.util.Map;
+
 import static codesquad.server.util.FileUtils.loadStaticFiles;
 
 public class StaticFileHandler extends AbstractRequestHandler {

@@ -1,6 +1,7 @@
 package codesquad.server.template.parser;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import codesquad.server.template.element.*;
 import org.junit.jupiter.api.Test;
 
