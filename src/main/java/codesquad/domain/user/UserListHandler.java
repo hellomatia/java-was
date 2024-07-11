@@ -19,7 +19,7 @@ public class UserListHandler extends CustomRequestHandler {
     public HttpResponse shoUserList(HttpRequest request) throws IOException {
         String sessionId = request.getCookie("sid");
         if (sessionId == null || SessionManager.getSession(sessionId) == null) {;
-            return redirect("/").build();
+            return redirect("/login").build();
         }
         Map<String, Object> data = new HashMap<>();
         User user = (User) SessionManager
