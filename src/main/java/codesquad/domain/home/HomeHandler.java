@@ -17,7 +17,6 @@ import java.util.Map;
 public class HomeHandler extends CustomRequestHandler {
     @HttpMethod("GET")
     public HttpResponse showMainPage(HttpRequest request) throws IOException {
-        TemplateEngine templateEngine = new TemplateEngine();
         String sessionId = request.getCookie("sid");
         Map<String, Object> data = new HashMap<>();
         if (sessionId != null && SessionManager.getSession(sessionId) != null) {
@@ -25,11 +24,11 @@ public class HomeHandler extends CustomRequestHandler {
             User user = (User) session.getAttribute("userInfo");
             data.put("isLoggedIn", true);
             data.put("userName", user.name());
-            return ok(templateEngine.render("main", data).getBytes()).build();
+            return ok(TemplateEngine.render("main", data).getBytes()).build();
         } else {
             data.put("isLoggedIn", false);
             data.put("userName", "");
-            return ok(templateEngine.render("main", data).getBytes()).build();
+            return ok(TemplateEngine.render("main", data).getBytes()).build();
         }
     }
 }

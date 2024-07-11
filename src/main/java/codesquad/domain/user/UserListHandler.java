@@ -9,7 +9,6 @@ import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import codesquad.server.session.SessionManager;
 import codesquad.server.template.engine.TemplateEngine;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,6 @@ import java.util.Map;
 public class UserListHandler extends CustomRequestHandler {
     @HttpMethod("GET")
     public HttpResponse shoUserList(HttpRequest request) throws IOException {
-        TemplateEngine templateEngine = new TemplateEngine();
         String sessionId = request.getCookie("sid");
         if (sessionId == null || SessionManager.getSession(sessionId) == null) {;
             return redirect("/").build();
@@ -30,6 +28,6 @@ public class UserListHandler extends CustomRequestHandler {
         data.put("isLoggedIn", true);
         data.put("userName", user.name());
         data.put("users", DataBase.findAllUsers());
-        return ok(templateEngine.render("user_list", data).getBytes()).build();
+        return ok(TemplateEngine.render("user_list", data).getBytes()).build();
     }
 }
