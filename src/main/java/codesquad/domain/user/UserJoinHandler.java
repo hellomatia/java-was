@@ -2,7 +2,7 @@ package codesquad.domain.user;
 
 import codesquad.database.DataBase;
 import codesquad.domain.user.model.User;
-import codesquad.server.Server;
+import codesquad.server.core.Server;
 import codesquad.server.handler.CustomRequestHandler;
 import codesquad.server.handler.annotation.Handler;
 import codesquad.server.handler.annotation.HttpMethod;
