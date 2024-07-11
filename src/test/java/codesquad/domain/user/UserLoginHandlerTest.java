@@ -42,7 +42,7 @@ class UserLoginHandlerTest {
     @Test
     void 처리_불가능_여부_확인_잘못된_메서드() {
         HttpRequest request = HttpRequest.builder()
-                .method("POST")
+                .method("DELETE")
                 .path("/login")
                 .build();
 
