@@ -2,6 +2,7 @@ package codesquad.server.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,16 +11,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 
-public class File {
-    private static final Logger logger = LoggerFactory.getLogger(File.class);
+public class FileUtils {
+    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
     private static final String STATIC_PATH = "static/";
 
-    private File() {
+    private FileUtils() {
     }
 
     public static Map<String, byte[]> loadStaticFiles() {
         Map<String, byte[]> staticFiles = new HashMap<>();
-        URL url = File.class.getClassLoader().getResource(STATIC_PATH);
+        URL url = FileUtils.class.getClassLoader().getResource(STATIC_PATH);
 
         if (url == null) {
             logger.error("Static resource directory not found");
@@ -47,7 +48,7 @@ public class File {
 
     private static void loadFromJar(Map<String, byte[]> staticFiles) {
         try {
-            URI uri = File.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            URI uri = FileUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             try (JarFile jarFile = new JarFile(new java.io.File(uri))) {
                 jarFile.entries().asIterator().forEachRemaining(entry -> {
                     if (!entry.isDirectory() && entry.getName().startsWith(STATIC_PATH)) {
@@ -100,6 +101,16 @@ public class File {
                 bos.write(buffer, 0, bytesRead);
             }
             return bos.toByteArray();
+        }
+    }
+
+    public static byte[] readFileContent(String filePath) {
+        try {
+            InputStream resourceUrl = FileUtils.class.getResourceAsStream(filePath);
+            return readInputStreamToByteArray(resourceUrl);
+        } catch (IOException e) {
+            logger.error("Error reading file: {}", filePath, e);
+            return null;
         }
     }
 }

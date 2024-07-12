@@ -1,6 +1,7 @@
 package codesquad.server.http.parser;
 
 import codesquad.server.http.HttpRequest;
+
 import java.io.*;
 
 public class Http11Parser {

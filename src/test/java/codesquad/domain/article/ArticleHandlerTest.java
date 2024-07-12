@@ -1,6 +1,5 @@
 package codesquad.domain.article;
 
-import codesquad.domain.user.UserJoinHandler;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import org.junit.jupiter.api.BeforeEach;

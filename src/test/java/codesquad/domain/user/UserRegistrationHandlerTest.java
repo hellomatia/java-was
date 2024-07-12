@@ -4,6 +4,7 @@ import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserRegistrationHandlerTest {

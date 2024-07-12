@@ -6,6 +6,8 @@ import codesquad.server.handler.annotation.HttpMethod;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 
+import static codesquad.server.util.FileUtils.readFileContent;
+
 @Handler("/registration")
 public class UserRegistrationHandler extends CustomRequestHandler {
     @HttpMethod("GET")
