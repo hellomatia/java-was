@@ -31,6 +31,16 @@ public class DatabaseManager {
                     "name VARCHAR(50), " +
                     "password VARCHAR(50), " +
                     "email VARCHAR(50))");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS posts (" +
+                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "account_id VARCHAR(255) NOT NULL, " +
+                    "account_nickname VARCHAR(255) NOT NULL, " +
+                    "image_url VARCHAR(1000) NOT NULL, " +
+                    "content CLOB NOT NULL, " +
+                    "likes_count INT DEFAULT 0, " +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(), " +
+                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())");
         } catch (SQLException e) {
             logger.error("Failed to initialize database", e);
         }
