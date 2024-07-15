@@ -23,6 +23,11 @@ public class DataBase {
     }
 
     private static void initializeData() {
+        initializeUsers();
+        initializePosts();
+    }
+
+    private static void initializeUsers() {
         List<User> initialUsers = Arrays.asList(
                 new User("Admin", "admin", "admin", "admin@example.com"),
                 new User("John Doe", "password123", "john", "john@example.com"),
@@ -30,7 +35,7 @@ public class DataBase {
                 new User("Bob Johnson", "bobpass", "bob", "bob@example.com")
         );
 
-        String sql = "INSERT INTO users (userId, name, password, email) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(userId) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -42,7 +47,45 @@ public class DataBase {
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
-            logger.error("failed to initialize users", e);
+            logger.error("Failed to initialize users", e);
+        }
+    }
+
+    private static void initializePosts() {
+        List<Post> initialPosts = Arrays.asList(
+                new Post(null, "admin", "Admin", "",
+                        "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
+                                "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
+                                "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
+                                "리액티브 시스템으로 구축된 시스템은 보다 유연하고, 느슨한 결합을 갖고, 확장성이 있습니다. " +
+                                "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
+                                "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
+                                "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
+                        0, null, null),
+                new Post(null, "admin", "Admin", "",
+                        "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
+                                "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
+                                "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
+                                "리액티브 시스템으로 구축된 시스템은 보다 유연하고, 느슨한 결합을 갖고, 확장성이 있습니다. " +
+                                "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
+                                "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
+                                "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
+                        0, null, null)
+        );
+
+        String sql = "INSERT INTO posts (account_id, account_nickname, image_url, content) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (Post post : initialPosts) {
+                pstmt.setString(1, post.accountId());
+                pstmt.setString(2, post.accountNickname());
+                pstmt.setString(3, post.imageUrl());
+                pstmt.setString(4, post.content());
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to initialize posts", e);
         }
     }
 
@@ -98,16 +141,13 @@ public class DataBase {
     }
 
     public static void addPost(Post post) {
-        String sql = "INSERT INTO posts (account_id, account_nickname, image_url, content, likes_count, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (account_id, account_nickname, image_url, content) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, post.accountId());
             pstmt.setString(2, post.accountNickname());
             pstmt.setString(3, post.imageUrl());
             pstmt.setString(4, post.content());
-            pstmt.setInt(5, post.likesCount());
-            pstmt.setTimestamp(6, Timestamp.valueOf(post.createdAt()));
-            pstmt.setTimestamp(7, Timestamp.valueOf(post.updatedAt()));
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
