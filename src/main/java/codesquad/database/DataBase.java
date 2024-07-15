@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DataBase {
@@ -13,13 +14,38 @@ public class DataBase {
 
     static {
         DatabaseManager.initDatabase();
+        initializeData();
     }
 
     private DataBase() {
     }
 
-    public static void addUser(User user) {
+    private static void initializeData() {
+        List<User> initialUsers = Arrays.asList(
+                new User("Admin", "admin", "admin", "admin@example.com"),
+                new User("John Doe", "password123", "john", "john@example.com"),
+                new User("Jane Smith", "pass456", "jane", "jane@example.com"),
+                new User("Bob Johnson", "bobpass", "bob", "bob@example.com")
+        );
+
         String sql = "INSERT INTO users (userId, name, password, email) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (User user : initialUsers) {
+                pstmt.setString(1, user.userId());
+                pstmt.setString(2, user.name());
+                pstmt.setString(3, user.password());
+                pstmt.setString(4, user.email());
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("failed to initialize users", e);
+        }
+    }
+
+    public static void addUser(User user) {
+        String sql = "MERGE INTO users KEY(userId) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.userId());
