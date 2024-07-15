@@ -41,7 +41,7 @@ class HttpConnectionProcessor implements Runnable {
 
     private HttpRequest parseRequest(ClientConnection connection) throws IOException {
         HttpRequest request = Http11Parser.parse(connection.getInputStream());
-        logger.debug("Received request: {}", request);
+        logger.debug("Received request: path => {}, method => {}", request.getPath(), request.getMethod());
         return request;
     }
 
