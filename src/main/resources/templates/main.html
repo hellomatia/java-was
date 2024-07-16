@@ -83,6 +83,20 @@
                 </p>
             </li>
             {% endfor %}
+            <form class="comment-form" action="/comment" method="POST">
+                <input
+                        class="comment-input"
+                        name="comment"
+                        placeholder="댓글을 남겨보세요!"
+                        required
+                />
+                <button
+                        class="comment-button"
+                        type="submit"
+                >
+                    댓글 남기기
+                </button>
+            </form>
         </ul>
         {% endfor %}
         <nav class="nav">
