@@ -32,11 +32,11 @@ public class ArticleHandler extends CustomRequestHandler {
             Session session = SessionManager.getSession(sessionId);
             User user = (User) session.getAttribute("userInfo");
             Post post = new Post(null,
+                    formData.get("title"),
                     user.userId(),
                     user.name(),
                     "",
                     formData.get("content"),
-                    0,
                     null,
                     null);
 

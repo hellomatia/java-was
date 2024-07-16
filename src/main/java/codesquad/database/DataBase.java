@@ -35,7 +35,7 @@ public class DataBase {
                 new User("Bob Johnson", "bobpass", "bob", "bob@example.com")
         );
 
-        String sql = "MERGE INTO users KEY(userId) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -53,7 +53,7 @@ public class DataBase {
 
     private static void initializePosts() {
         List<Post> initialPosts = Arrays.asList(
-                new Post(null, "admin", "Admin", "",
+                new Post(null, "리액티브 시스템1", "admin", "Admin", "",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
                                 "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
@@ -61,8 +61,8 @@ public class DataBase {
                                 "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
-                        0, null, null),
-                new Post(null, "admin", "Admin", "",
+                        null, null),
+                new Post(null, "리액티브 시스템2", "admin", "Admin", "",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
                                 "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
@@ -70,18 +70,19 @@ public class DataBase {
                                 "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
-                        0, null, null)
+                        null, null)
         );
 
-        String sql = "INSERT INTO posts (account_id, account_nickname, image_url, content) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (title, user_id, user_name, image_url, content) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             for (Post post : initialPosts) {
-                pstmt.setString(1, post.accountId());
-                pstmt.setString(2, post.accountNickname());
-                pstmt.setString(3, post.imageUrl());
-                pstmt.setString(4, post.content());
+                pstmt.setString(1, post.title());
+                pstmt.setString(2, post.userId());
+                pstmt.setString(3, post.userName());
+                pstmt.setString(4, post.imageUrl());
+                pstmt.setString(5, post.content());
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -90,7 +91,7 @@ public class DataBase {
     }
 
     public static void addUser(User user) {
-        String sql = "MERGE INTO users KEY(userId) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.userId());
@@ -104,19 +105,20 @@ public class DataBase {
     }
 
     public static User findUserByUserId(String userId) {
-        String sql = "SELECT * FROM users WHERE userId = ?";
+        String sql = "SELECT * FROM users WHERE user_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return new User(rs.getString("name"),
+                    return new User(rs.getString("user_name"),
                             rs.getString("password"),
-                            rs.getString("userId"),
+                            rs.getString("user_id"),
                             rs.getString("email"));
                 }
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             logger.info("Failed to find user, userId: {}", userId);
         }
         return null;
@@ -129,9 +131,9 @@ public class DataBase {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                users.add(new User(rs.getString("name"),
+                users.add(new User(rs.getString("user_name"),
                         rs.getString("password"),
-                        rs.getString("userId"),
+                        rs.getString("user_id"),
                         rs.getString("email")));
             }
         } catch (SQLException e) {
@@ -141,13 +143,14 @@ public class DataBase {
     }
 
     public static void addPost(Post post) {
-        String sql = "INSERT INTO posts (account_id, account_nickname, image_url, content) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (title, user_id, user_name, image_url, content) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, post.accountId());
-            pstmt.setString(2, post.accountNickname());
-            pstmt.setString(3, post.imageUrl());
-            pstmt.setString(4, post.content());
+            pstmt.setString(1, post.title());
+            pstmt.setString(2, post.userId());
+            pstmt.setString(3, post.userName());
+            pstmt.setString(4, post.imageUrl());
+            pstmt.setString(5, post.content());
             pstmt.executeUpdate();
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
@@ -170,11 +173,11 @@ public class DataBase {
                 if (rs.next()) {
                     return new Post(
                             rs.getLong("id"),
-                            rs.getString("account_id"),
-                            rs.getString("account_nickname"),
+                            rs.getString("title"),
+                            rs.getString("user_id"),
+                            rs.getString("user_name"),
                             rs.getString("image_url"),
                             rs.getString("content"),
-                            rs.getInt("likes_count"),
                             rs.getTimestamp("created_at").toLocalDateTime(),
                             rs.getTimestamp("updated_at").toLocalDateTime()
                     );
@@ -195,11 +198,11 @@ public class DataBase {
             while (rs.next()) {
                 posts.add(new Post(
                         rs.getLong("id"),
-                        rs.getString("account_id"),
-                        rs.getString("account_nickname"),
+                        rs.getString("title"),
+                        rs.getString("user_id"),
+                        rs.getString("user_name"),
                         rs.getString("image_url"),
                         rs.getString("content"),
-                        rs.getInt("likes_count"),
                         rs.getTimestamp("created_at").toLocalDateTime(),
                         rs.getTimestamp("updated_at").toLocalDateTime()
                 ));
@@ -211,13 +214,12 @@ public class DataBase {
     }
 
     public static void updatePost(Post post) {
-        String sql = "UPDATE posts SET account_nickname = ?, image_url = ?, content = ?, likes_count = ?, updated_at = ? WHERE id = ?";
+        String sql = "UPDATE posts SET user_name = ?, image_url = ?, content = ?, updated_at = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, post.accountNickname());
+            pstmt.setString(1, post.userName());
             pstmt.setString(2, post.imageUrl());
             pstmt.setString(3, post.content());
-            pstmt.setInt(4, post.likesCount());
             pstmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             pstmt.setLong(6, post.id());
             int affectedRows = pstmt.executeUpdate();

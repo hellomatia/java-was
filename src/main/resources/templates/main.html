@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -45,7 +45,7 @@
         <div class="post">
             <div class="post__account">
                 <img class="post__account__img" src="" />
-                <p class="post__account__nickname">{{post.accountNickname()}}</p>
+                <p class="post__account__nickname">{{post.userName()}}</p>
             </div>
             <img class="post__img" src="{{post.imageUrl()}}" />
             <div class="post__menu">
@@ -66,6 +66,8 @@
                 </button>
             </div>
             <p class="post__article">
+                <span style="font-weight: bold;">{{post.title()}}</span>
+                <br />
                 {{post.content()}}
             </p>
         </div>
@@ -82,6 +84,7 @@
             </li>
             {% endfor %}
         </ul>
+        {% endfor %}
         <nav class="nav">
             <ul class="nav__menu">
                 <li class="nav__menu__item">
@@ -101,7 +104,6 @@
                 </li>
             </ul>
         </nav>
-        {% endfor %}
     </div>
 </div>
 </body>

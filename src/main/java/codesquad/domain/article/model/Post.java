@@ -4,19 +4,15 @@ import java.time.LocalDateTime;
 
 public record Post(
         Long id,
-        String accountId,
-        String accountNickname,
+        String title,
+        String userId,
+        String userName,
         String imageUrl,
         String content,
-        int likesCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
     public Post withUpdatedTimestamp() {
-        return new Post(id, accountId, accountNickname, imageUrl, content, likesCount, createdAt, LocalDateTime.now());
-    }
-
-    public Post withIncrementedLikes() {
-        return new Post(id, accountId, accountNickname, imageUrl, content, likesCount + 1, createdAt, LocalDateTime.now());
+        return new Post(id, title, userId, userName, imageUrl, content, createdAt, LocalDateTime.now());
     }
 }
