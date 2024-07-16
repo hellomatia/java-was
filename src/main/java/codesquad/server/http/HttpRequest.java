@@ -11,6 +11,7 @@ public class HttpRequest {
     private final Map<String, String> cookies;
     private final Map<String, String> queryParams;
     private final String body;
+    private final byte[] bodyBytes;
 
     private HttpRequest(Builder builder) {
         this.method = builder.method;
@@ -20,6 +21,7 @@ public class HttpRequest {
         this.cookies = Map.copyOf(builder.cookies);
         this.queryParams = Map.copyOf(builder.queryParams);
         this.body = builder.body;
+        this.bodyBytes = builder.bodyBytes;
     }
 
     public String getMethod() {
@@ -52,6 +54,8 @@ public class HttpRequest {
 
     public String getBody() { return body; }
 
+    public byte[] getBodyBytes() { return bodyBytes; }
+
     @Override
     public String toString() {
         return "HttpRequest{" +
@@ -72,6 +76,7 @@ public class HttpRequest {
         private Map<String, String> cookies = new HashMap<>();
         private Map<String, String> queryParams = new HashMap<>();
         private String body;
+        private byte[] bodyBytes;
 
         public Builder method(String method) {
             this.method = method;
@@ -109,6 +114,11 @@ public class HttpRequest {
 
         public Builder body(String body) {
             this.body = body;
+            return this;
+        }
+
+        public Builder bodyBytes(byte[] bodyBytes) {
+            this.bodyBytes = bodyBytes;
             return this;
         }
 
