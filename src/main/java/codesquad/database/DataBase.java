@@ -31,13 +31,13 @@ public class DataBase {
 
     private static void initializeUsers() {
         List<User> initialUsers = Arrays.asList(
-                new User("Admin", "admin", "admin", "admin@example.com"),
-                new User("John Doe", "password123", "john", "john@example.com"),
-                new User("Jane Smith", "pass456", "jane", "jane@example.com"),
-                new User("Bob Johnson", "bobpass", "bob", "bob@example.com")
+                new User("Admin", "admin", "admin", "admin@example.com", null),
+                new User("John Doe", "password123", "john", "john@example.com", null),
+                new User("Jane Smith", "pass456", "jane", "jane@example.com", null),
+                new User("Bob Johnson", "bobpass", "bob", "bob@example.com", null)
         );
 
-        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -46,7 +46,9 @@ public class DataBase {
                 pstmt.setString(2, user.name());
                 pstmt.setString(3, user.password());
                 pstmt.setString(4, user.email());
+                pstmt.setString(5, user.userImageUrl());
                 pstmt.executeUpdate();
+                System.out.println(user);
             }
         } catch (SQLException e) {
             logger.error("Failed to initialize users", e);
@@ -116,13 +118,14 @@ public class DataBase {
     }
 
     public static void addUser(User user) {
-        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.userId());
             pstmt.setString(2, user.name());
             pstmt.setString(3, user.password());
             pstmt.setString(4, user.email());
+            pstmt.setString(5, user.userImageUrl());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             logger.info("Failed to add user: {}", user);
@@ -139,7 +142,8 @@ public class DataBase {
                     return new User(rs.getString("user_name"),
                             rs.getString("password"),
                             rs.getString("user_id"),
-                            rs.getString("email"));
+                            rs.getString("email"),
+                            rs.getString("user_image_url"));
                 }
             }
         } catch (SQLException e) {
@@ -159,7 +163,8 @@ public class DataBase {
                 users.add(new User(rs.getString("user_name"),
                         rs.getString("password"),
                         rs.getString("user_id"),
-                        rs.getString("email")));
+                        rs.getString("email"),
+                        rs.getString("user_image_url")));
             }
         } catch (SQLException e) {
             logger.error("Failed to find users", e);

@@ -33,7 +33,8 @@ public class DatabaseManager {
                     "user_id VARCHAR(50) PRIMARY KEY, " +
                     "user_name VARCHAR(50), " +
                     "password VARCHAR(50), " +
-                    "email VARCHAR(50))");
+                    "email VARCHAR(50), " +
+                    "user_image_url VARCHAR(1000))");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS posts (" +
                     "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
