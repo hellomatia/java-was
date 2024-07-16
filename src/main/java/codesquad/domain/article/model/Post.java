@@ -1,6 +1,7 @@
 package codesquad.domain.article.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record Post(
         Long id,
@@ -10,9 +11,10 @@ public record Post(
         String imageUrl,
         String content,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        List<Comment> comments
 ) {
-    public Post withUpdatedTimestamp() {
-        return new Post(id, title, userId, userName, imageUrl, content, createdAt, LocalDateTime.now());
+    public Post addComments(List<Comment> comments) {
+        return new Post(id, title, userId, userName, imageUrl, content, createdAt, updatedAt, comments);
     }
 }
