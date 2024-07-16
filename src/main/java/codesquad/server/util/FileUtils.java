@@ -1,5 +1,6 @@
 package codesquad.server.util;
 
+import codesquad.server.http.parser.MultipartFormDataParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.jar.JarFile;
 
 public class FileUtils {
@@ -112,5 +114,24 @@ public class FileUtils {
             logger.error("Error reading file: {}", filePath, e);
             return null;
         }
+    }
+
+    public static String saveImage(MultipartFormDataParser.FileData fileData) throws IOException {
+        // 현재 실행 경로에 image 폴더 생성
+        File uploadDir = new File("image");
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+
+        // 파일 이름 생성 (중복 방지를 위해 UUID 사용)
+        String fileName = UUID.randomUUID() + "." + fileData.getExtension();
+        String filePath = "image" + File.separator + fileName;
+
+        // 파일 저장
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(fileData.getContent());
+        }
+
+        return "/image?name=" + fileName;
     }
 }
