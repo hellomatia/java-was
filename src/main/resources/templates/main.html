@@ -72,14 +72,14 @@
             </p>
         </div>
         <ul class="comment">
-            {% for comment in comments %}
+            {% for comment in post.comments() %}
             <li class="comment__item">
                 <div class="comment__item__user">
-                    <img class="comment__item__user__img" src="{{comment.userImageUrl}}" />
+                    <img class="comment__item__user__img" src="" />
                     <p class="comment__item__user__nickname">{{comment.userName()}}</p>
                 </div>
                 <p class="comment__item__article">
-                    {{comment.content()}}
+                    {{comment.comment()}}
                 </p>
             </li>
             {% endfor %}

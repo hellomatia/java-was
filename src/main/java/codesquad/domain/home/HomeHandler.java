@@ -1,6 +1,7 @@
 package codesquad.domain.home;
 
 import codesquad.database.DataBase;
+import codesquad.domain.article.model.Comment;
 import codesquad.domain.article.model.Post;
 import codesquad.domain.user.model.User;
 import codesquad.server.handler.CustomRequestHandler;
@@ -24,6 +25,11 @@ public class HomeHandler extends CustomRequestHandler {
         String sessionId = request.getCookie("sid");
         Map<String, Object> data = new HashMap<>();
         List<Post> posts = DataBase.findAllPosts();
+        for (int i = 0; i < posts.size(); i++) {
+            Post post = posts.get(i);
+            List<Comment> comments = DataBase.findCommentsByPostId(post.id());
+            posts.set(i, post.addComments(comments));
+        }
         data.put("posts", posts);
         if (sessionId != null && SessionManager.getSession(sessionId) != null) {
             Session session = SessionManager.getSession(sessionId);
