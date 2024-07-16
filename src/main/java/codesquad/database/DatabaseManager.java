@@ -47,6 +47,7 @@ public class DatabaseManager {
 
             stmt.execute("CREATE TABLE IF NOT EXISTS comments (" +
                     "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "post_id BIGINT NOT NULL," +
                     "user_id VARCHAR(255) NOT NULL, " +
                     "user_name VARCHAR(255) NOT NULL, " +
                     "comment CLOB NOT NULL, " +

@@ -83,7 +83,7 @@
                 </p>
             </li>
             {% endfor %}
-            <form class="comment-form" action="/comment" method="POST">
+            <form class="comment-form" action="/comment?postId={{post.id()}}" method="POST">
                 <input
                         class="comment-input"
                         name="comment"
