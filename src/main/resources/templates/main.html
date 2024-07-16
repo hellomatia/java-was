@@ -44,7 +44,7 @@
         {% for post in posts %}
         <div class="post">
             <div class="post__account">
-                <img class="post__account__img" src="" />
+                <img class="post__account__img" src="/image?userId={{post.userId()}}" />
                 <p class="post__account__nickname">{{post.userName()}}</p>
             </div>
             <img class="post__img" src="{{post.imageUrl()}}" />
@@ -75,7 +75,7 @@
             {% for comment in post.comments() %}
             <li class="comment__item">
                 <div class="comment__item__user">
-                    <img class="comment__item__user__img" src="" />
+                    <img class="comment__item__user__img" src="/image?userId={{comment.userId()}}" />
                     <p class="comment__item__user__nickname">{{comment.userName()}}</p>
                 </div>
                 <p class="comment__item__article">
