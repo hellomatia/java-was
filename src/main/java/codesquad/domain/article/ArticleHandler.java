@@ -12,13 +12,13 @@ import codesquad.server.http.parser.MultipartFormDataParser;
 import codesquad.server.session.Session;
 import codesquad.server.session.SessionManager;
 
-import java.util.Map;
+import java.io.IOException;
 
 import static codesquad.server.util.FileUtils.readFileContent;
+import static codesquad.server.util.FileUtils.saveImage;
 
 @Handler("/article")
 public class ArticleHandler extends CustomRequestHandler {
-
     @HttpMethod("GET")
     public HttpResponse article(HttpRequest request) {
         String sessionId = request.getCookie("sid");
@@ -31,16 +31,29 @@ public class ArticleHandler extends CustomRequestHandler {
     @HttpMethod("POST")
     public HttpResponse writeArticle(HttpRequest request) {
         String sessionId = request.getCookie("sid");
-        Map<String, String> formData = MultipartFormDataParser.parse(request);
+        MultipartFormDataParser.ParsedData parsedData = MultipartFormDataParser.parse(request);
         if (sessionId != null && SessionManager.getSession(sessionId) != null) {
             Session session = SessionManager.getSession(sessionId);
             User user = (User) session.getAttribute("userInfo");
+
+            String imageUrl = null;
+            if (!parsedData.getFileData().isEmpty()) {
+                try {
+                    MultipartFormDataParser.FileData imageFile = parsedData.getFileData().get("image");
+                    if (imageFile != null) {
+                        imageUrl = saveImage(imageFile);
+                    }
+                } catch (IOException e) {
+                    return internalServerError().build();
+                }
+            }
+
             Post post = new Post(null,
-                    formData.get("title"),
+                    parsedData.getFormData().get("title"),
                     user.userId(),
                     user.name(),
-                    "",
-                    formData.get("content"),
+                    imageUrl,
+                    parsedData.getFormData().get("content"),
                     null,
                     null,
                     null);
