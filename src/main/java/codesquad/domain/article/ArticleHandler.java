@@ -21,7 +21,11 @@ public class ArticleHandler extends CustomRequestHandler {
 
     @HttpMethod("GET")
     public HttpResponse article(HttpRequest request) {
-        return ok(readFileContent("/static/article/index.html")).build();
+        String sessionId = request.getCookie("sid");
+        if (sessionId != null && SessionManager.getSession(sessionId) != null) {
+            return ok(readFileContent("/static/article/index.html")).build();
+        }
+        return redirect("/login").build();
     }
 
     @HttpMethod("POST")
