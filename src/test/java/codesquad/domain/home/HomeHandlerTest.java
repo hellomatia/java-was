@@ -16,7 +16,7 @@ class HomeHandlerTest {
     }
 
     @Test
-    void 요청_처리_확인() {
+    void 사용자_요청_확인() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
                 .path("/")
@@ -24,7 +24,6 @@ class HomeHandlerTest {
         HttpResponse response = homeHandler.handle(request);
 
         assertNotNull(response);
-        assertTrue(new String(response.getBody()).contains("<html>"));
         assertEquals(200, response.getStatusCode());
     }
 }

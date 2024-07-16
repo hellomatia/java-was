@@ -16,7 +16,7 @@ class ArticleHandlerTest {
     }
 
     @Test
-    void 요청_처리_확인() {
+    void 로그인하지_않은_사용자_리다이렉트() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
                 .path("/article")
@@ -25,8 +25,7 @@ class ArticleHandlerTest {
         HttpResponse response = articleHandler.handle(request);
 
         assertNotNull(response);
-        assertTrue(new String(response.getBody()).contains("<html>"));
-        assertEquals(200, response.getStatusCode());
+        assertEquals(302, response.getStatusCode());
     }
 
     @Test
@@ -42,7 +41,7 @@ class ArticleHandlerTest {
     @Test
     void 처리_불가능_여부_확인_잘못된_메서드() {
         HttpRequest request = HttpRequest.builder()
-                .method("POST")
+                .method("DELETE")
                 .path("/article")
                 .build();
 
