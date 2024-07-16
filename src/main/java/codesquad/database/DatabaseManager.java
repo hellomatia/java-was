@@ -1,5 +1,6 @@
 package codesquad.database;
 
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +8,7 @@ import java.sql.*;
 
 public class DatabaseManager {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
+    private static final JdbcConnectionPool jdbcConnectionPool;
     private static final String JDBC_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
     private static final String USER = "sa";
     private static final String PASSWORD = "";
@@ -14,13 +16,14 @@ public class DatabaseManager {
     static {
         try {
             Class.forName("org.h2.Driver");
+            jdbcConnectionPool = JdbcConnectionPool.create(JDBC_URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("H2 JDBC Driver not found", e);
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+        return jdbcConnectionPool.getConnection();
     }
 
     public static void initDatabase() {
