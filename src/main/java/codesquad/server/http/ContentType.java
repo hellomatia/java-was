@@ -30,7 +30,7 @@ public enum ContentType {
                 .orElse("text/plain; charset=UTF-8");
     }
 
-    private static String getExtensionFromFilePath(String filePath) {
+    public static String getExtensionFromFilePath(String filePath) {
         int dotIndex = filePath.lastIndexOf('.');
         return (dotIndex > 0) ? filePath.substring(dotIndex + 1) : "";
     }
