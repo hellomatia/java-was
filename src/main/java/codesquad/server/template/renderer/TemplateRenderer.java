@@ -103,7 +103,7 @@ public class TemplateRenderer {
     }
 
     private void renderForElement(ForElement forElement, Map<String, Object> data, StringBuilder result) {
-        Object listObj = data.get(forElement.collectionName);
+        Object listObj = resolveVariable(forElement.collectionName, data);
         if (listObj instanceof List) {
             List<?> list = (List<?>) listObj;
             for (Object item : list) {
@@ -122,12 +122,19 @@ public class TemplateRenderer {
             String left = parts[0].trim();
             String right = parts[1].trim().replaceAll("\"", "");
             Object leftValue = resolveVariable(left, data);
-            if (leftValue != null) {
+            Object rightValue = resolveVariable(right, data);
+
+            if (leftValue != null && rightValue != null) {
+                return leftValue.equals(rightValue);
+            } else if (leftValue != null) {
                 if (leftValue instanceof Boolean) {
                     return (Boolean) leftValue == Boolean.parseBoolean(right);
                 }
                 return leftValue.toString().equals(right);
             }
+        } else {
+            Object value = resolveVariable(condition, data);
+            return value instanceof Boolean ? (Boolean) value : false;
         }
         return false;
     }
