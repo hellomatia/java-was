@@ -42,6 +42,7 @@ public class ArticleHandler extends CustomRequestHandler {
                     "",
                     formData.get("content"),
                     null,
+                    null,
                     null);
 
             DataBase.addPost(post);
