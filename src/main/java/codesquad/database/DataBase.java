@@ -1,5 +1,6 @@
 package codesquad.database;
 
+import codesquad.domain.article.model.Comment;
 import codesquad.domain.article.model.Post;
 import codesquad.domain.user.model.User;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class DataBase {
     private static void initializeData() {
         initializeUsers();
         initializePosts();
+        initializeComments();
     }
 
     private static void initializeUsers() {
@@ -61,7 +63,7 @@ public class DataBase {
                                 "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
-                        null, null),
+                        null, null, null),
                 new Post(null, "리액티브 시스템2", "admin", "Admin", "",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
@@ -70,7 +72,7 @@ public class DataBase {
                                 "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
-                        null, null)
+                        null, null, null)
         );
 
         String sql = "INSERT INTO posts (title, user_id, user_name, image_url, content) VALUES (?, ?, ?, ?, ?)";
@@ -87,6 +89,29 @@ public class DataBase {
             }
         } catch (SQLException e) {
             logger.error("Failed to initialize posts", e);
+        }
+    }
+
+    private static void initializeComments() {
+        List<Comment> initialComments = Arrays.asList(
+                new Comment(null, 1L, "john", "John Doe", "Great post about reactive systems!", null, null),
+                new Comment(null, 1L, "jane", "Jane Smith", "I learned a lot from this. Thanks!", null, null),
+                new Comment(null, 2L, "bob", "Bob Johnson", "Looking forward to more posts on this topic.", null, null)
+        );
+
+        String sql = "INSERT INTO comments (post_id, user_id, user_name, comment) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (Comment comment : initialComments) {
+                pstmt.setLong(1, comment.postId());
+                pstmt.setString(2, comment.userId());
+                pstmt.setString(3, comment.userName());
+                pstmt.setString(4, comment.comment());
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to initialize comments", e);
         }
     }
 
@@ -179,7 +204,8 @@ public class DataBase {
                             rs.getString("image_url"),
                             rs.getString("content"),
                             rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getTimestamp("updated_at").toLocalDateTime()
+                            rs.getTimestamp("updated_at").toLocalDateTime(),
+                            null
                     );
                 }
             }
@@ -204,7 +230,8 @@ public class DataBase {
                         rs.getString("image_url"),
                         rs.getString("content"),
                         rs.getTimestamp("created_at").toLocalDateTime(),
-                        rs.getTimestamp("updated_at").toLocalDateTime()
+                        rs.getTimestamp("updated_at").toLocalDateTime(),
+                        null
                 ));
             }
         } catch (SQLException e) {
@@ -231,5 +258,44 @@ public class DataBase {
         } catch (SQLException e) {
             logger.error("Failed to update post: {}", post, e);
         }
+    }
+
+    public static void addComment(Comment comment) {
+        String sql = "INSERT INTO comments (post_id, user_id, user_name, comment) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, comment.postId());
+            pstmt.setString(2, comment.userId());
+            pstmt.setString(3, comment.userName());
+            pstmt.setString(4, comment.comment());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Failed to add comment: {}", comment, e);
+        }
+    }
+
+    public static List<Comment> findCommentsByPostId(Long postId) {
+        List<Comment> comments = new ArrayList<>();
+        String sql = "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, postId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    comments.add(new Comment(
+                            rs.getLong("id"),
+                            rs.getLong("post_id"),
+                            rs.getString("user_id"),
+                            rs.getString("user_name"),
+                            rs.getString("comment"),
+                            rs.getTimestamp("created_at").toLocalDateTime(),
+                            rs.getTimestamp("updated_at").toLocalDateTime()
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to get comments for post: {}", postId, e);
+        }
+        return comments;
     }
 }

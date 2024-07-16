@@ -1,5 +1,6 @@
 package codesquad.domain.article;
 
+import codesquad.database.DataBase;
 import codesquad.domain.article.model.Comment;
 import codesquad.domain.user.model.User;
 import codesquad.server.handler.CustomRequestHandler;
@@ -32,6 +33,7 @@ public class CommentHandler extends CustomRequestHandler {
                     null,
                     null
                     );
+            DataBase.addComment(comment);
             return redirect("/").build();
         }
         return redirect("/login").build();
