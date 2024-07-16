@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import static codesquad.server.util.FileUtils.readFileContent;
+
 @Handler("/image")
 public class ImageHandler extends CustomRequestHandler {
     private static final String IMAGE_DIRECTORY = "image";
@@ -26,24 +28,28 @@ public class ImageHandler extends CustomRequestHandler {
         if (imageName == null) {
             String userId = request.getQueryParam("userId");
             if (userId == null) {
-                return notFound().build();
+                return noImage();
             }
             User user = DataBase.findUserByUserId(userId);
             if (user == null) {
-                return notFound().build();
+                return noImage();
             }
-            imageName = user.userImageUrl().split("=")[1];
+            try {
+                imageName = user.userImageUrl().split("=")[1];
+            } catch (Exception e) {
+                return noImage();
+            }
         }
 
         File imageFile = new File(IMAGE_DIRECTORY, imageName);
         if (!imageFile.exists()) {
-            return notFound().build();
+            return noImage();
         }
 
         try {
             image = readFileToByteArray(imageFile);
         } catch (IOException e) {
-            return internalServerError().build();
+            return noImage();
         }
 
         String mimeType = ContentType.getMimeTypeFromFilePath(imageName);
@@ -63,5 +69,13 @@ public class ImageHandler extends CustomRequestHandler {
             }
             return bos.toByteArray();
         }
+    }
+
+    private HttpResponse noImage() {
+        byte[] noImage = readFileContent("/static/img/no_image.png");
+        return ok(noImage)
+                .addHeader("Content-Type", ContentType.PNG.getMimeType())
+                .addHeader("Content-Length", String.valueOf(noImage.length))
+                .build();
     }
 }

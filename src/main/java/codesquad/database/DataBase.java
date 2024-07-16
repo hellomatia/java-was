@@ -57,7 +57,7 @@ public class DataBase {
 
     private static void initializePosts() {
         List<Post> initialPosts = Arrays.asList(
-                new Post(null, "리액티브 시스템1", "admin", "Admin", "",
+                new Post(null, "리액티브 시스템1", "admin", "Admin", "/image",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
                                 "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
@@ -66,7 +66,7 @@ public class DataBase {
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
                         null, null, null),
-                new Post(null, "리액티브 시스템2", "admin", "Admin", "",
+                new Post(null, "리액티브 시스템2", "admin", "Admin", "/image",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
                                 "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
