@@ -41,6 +41,14 @@ public class DatabaseManager {
                     "content CLOB NOT NULL, " +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(), " +
                     "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS comments (" +
+                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "user_id VARCHAR(255) NOT NULL, " +
+                    "user_name VARCHAR(255) NOT NULL, " +
+                    "comment CLOB NOT NULL, " +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(), " +
+                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())");
         } catch (SQLException e) {
             logger.error("Failed to initialize database", e);
         }
