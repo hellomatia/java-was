@@ -48,6 +48,7 @@ public class DataBaseEngine {
     private void saveTableStructure(String tableName, List<String> columns) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(DATA_DIR + tableName + ".csv"))) {
             writer.println(String.join(",", columns));
+            logger.debug("Saved table structure: {}", tableName);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

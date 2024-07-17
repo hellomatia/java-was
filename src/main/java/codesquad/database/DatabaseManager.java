@@ -1,6 +1,6 @@
 package codesquad.database;
 
-import org.h2.jdbcx.JdbcConnectionPool;
+import codesquad.database.jdbc.CsvDataBaseConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,52 +8,50 @@ import java.sql.*;
 
 public class DatabaseManager {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
-    private static final JdbcConnectionPool jdbcConnectionPool;
-    private static final String JDBC_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "";
 
     static {
         try {
-            Class.forName("org.h2.Driver");
-            jdbcConnectionPool = JdbcConnectionPool.create(JDBC_URL, USER, PASSWORD);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("H2 JDBC Driver not found", e);
+            initDatabase();
+        } catch (Exception e) {
+            logger.error("Failed to initialize database", e);
+            throw new RuntimeException("Database initialization failed", e);
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        return jdbcConnectionPool.getConnection();
+        return new CsvDataBaseConnection();
     }
 
     public static void initDatabase() {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
-                    "user_id VARCHAR(50) PRIMARY KEY, " +
-                    "user_name VARCHAR(50), " +
-                    "password VARCHAR(50), " +
-                    "email VARCHAR(50), " +
-                    "user_image_url VARCHAR(1000))");
+            logger.info("Initializing database: users");
+            stmt.executeQuery("CREATE TABLE users (" +
+                    "user_id, " +
+                    "user_name, " +
+                    "password, " +
+                    "email, " +
+                    "user_image_url )");
+            logger.info("Initializing database: posts");
+            stmt.executeQuery("CREATE TABLE posts (" +
+                    "id, " +
+                    "title, " +
+                    "user_id, " +
+                    "user_name, " +
+                    "image_url, " +
+                    "content, " +
+                    "created_at, " +
+                    "updated_at )");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS posts (" +
-                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                    "title VARCHAR(255) NOT NULL,"+
-                    "user_id VARCHAR(255) NOT NULL, " +
-                    "user_name VARCHAR(255) NOT NULL, " +
-                    "image_url VARCHAR(1000) NOT NULL, " +
-                    "content CLOB NOT NULL, " +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(), " +
-                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS comments (" +
-                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
-                    "post_id BIGINT NOT NULL," +
-                    "user_id VARCHAR(255) NOT NULL, " +
-                    "user_name VARCHAR(255) NOT NULL, " +
-                    "comment CLOB NOT NULL, " +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(), " +
-                    "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP())");
+            logger.info("Initializing database: comments");
+            stmt.executeQuery("CREATE TABLE comments (" +
+                    "id, " +
+                    "post_id, " +
+                    "user_id, " +
+                    "user_name, " +
+                    "comment, " +
+                    "created_at, " +
+                    "updated_at )");
         } catch (SQLException e) {
             logger.error("Failed to initialize database", e);
         }
