@@ -15,12 +15,12 @@ public class CsvDataBaseConnection implements Connection {
         return new CsvDataBaseStatement(db);
     }
 
-//  ----------------------------------------------------구현 생략-------------------------------------------------------
-
     @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return null;
+        return new CsvDataBasePreparedStatement(this, sql);
     }
+
+//  ----------------------------------------------------구현 생략-------------------------------------------------------
 
     @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
