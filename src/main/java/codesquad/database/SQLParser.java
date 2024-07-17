@@ -34,6 +34,10 @@ public class SQLParser {
     public SQLStatement parse() throws SQLException {
         if (match("SELECT")) {
             return parseSelect();
+        } else if (match("INSERT")) {
+            return parseInsert();
+        } else if (match("CREATE")) {
+            return parseCreateTable();
         }
         throw new SQLException("Unsupported SQL statement");
     }
