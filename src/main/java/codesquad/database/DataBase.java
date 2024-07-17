@@ -16,7 +16,6 @@ public class DataBase {
     private static final Logger logger = LoggerFactory.getLogger(DataBase.class);
 
     static {
-        DatabaseManager.initDatabase();
         initializeData();
     }
 
@@ -37,7 +36,7 @@ public class DataBase {
                 new User("Bob Johnson", "bobpass", "bob", "bob@example.com", null)
         );
 
-        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
