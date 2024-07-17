@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.database.parser;
 
 import codesquad.database.statement.CreateTableStatement;
 import codesquad.database.statement.InsertStatement;
