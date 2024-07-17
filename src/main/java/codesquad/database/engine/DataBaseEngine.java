@@ -11,4 +11,7 @@ public class DataBaseEngine {
 
     public void createTable(String tableName, List<String> columns) {
     }
+
+    public void insert(String tableName, List<String> values) {
+    }
 }
