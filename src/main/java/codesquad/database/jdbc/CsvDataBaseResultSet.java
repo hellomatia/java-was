@@ -1,4 +1,4 @@
-package codesquad.database.result;
+package codesquad.database.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -9,11 +9,11 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleResultSet implements ResultSet {
+public class CsvDataBaseResultSet implements ResultSet {
     private List<Map<String, String>> rows;
     private int currentRow = -1;
 
-    public SimpleResultSet(List<Map<String, String>> rows) {
+    public CsvDataBaseResultSet(List<Map<String, String>> rows) {
         this.rows = rows;
     }
 

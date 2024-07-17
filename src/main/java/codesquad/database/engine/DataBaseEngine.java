@@ -1,7 +1,7 @@
 package codesquad.database.engine;
 
 import codesquad.database.statement.SelectStatement;
-import codesquad.database.result.SimpleResultSet;
+import codesquad.database.jdbc.CsvDataBaseResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public class DataBaseEngine {
         } catch(IOException e){
             logger.error("Error reading CSV file", e);
         }
-        return new SimpleResultSet(results);
+        return new CsvDataBaseResultSet(results);
     }
 
     private boolean matchesWhere(Map<String, String> row, Map<String, String> whereConditions) {
