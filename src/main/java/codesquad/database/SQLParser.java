@@ -1,5 +1,6 @@
 package codesquad.database;
 
+import codesquad.database.statement.CreateTableStatement;
 import codesquad.database.statement.SQLStatement;
 import codesquad.database.statement.SelectStatement;
 
@@ -50,6 +51,24 @@ public class SQLParser {
 
     private String consume() {
         return tokens.get(position++);
+    }
+
+    private CreateTableStatement parseCreateTable() throws SQLException {
+        if (!match("TABLE")) {
+            throw new SQLException("Expected TABLE keyword");
+        }
+        String tableName = consume();
+        if (!match("(")) {
+            throw new SQLException("Expected ( after table name");
+        }
+        List<String> columns = new ArrayList<>();
+        do {
+            columns.add(consume());
+        } while (match(","));
+        if (!match(")")) {
+            throw new SQLException("Expected ) after column list");
+        }
+        return new CreateTableStatement(tableName, columns);
     }
 
     private SelectStatement parseSelect() throws SQLException {
