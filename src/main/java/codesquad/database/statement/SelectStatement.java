@@ -20,6 +20,18 @@ public class SelectStatement implements SQLStatement {
 
     @Override
     public ResultSet execute(DataBaseEngine db) throws SQLException {
-        return db.excuteSelect(this);
+        return db.executeSelect(this);
+    }
+
+    public List<String> getColumns() {
+        return columns;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public Map<String, String> getWhereConditions() {
+        return whereConditions;
     }
 }
