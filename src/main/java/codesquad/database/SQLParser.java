@@ -1,6 +1,7 @@
 package codesquad.database;
 
 import codesquad.database.statement.CreateTableStatement;
+import codesquad.database.statement.InsertStatement;
 import codesquad.database.statement.SQLStatement;
 import codesquad.database.statement.SelectStatement;
 
@@ -98,5 +99,26 @@ public class SQLParser {
         }
 
         return new SelectStatement(columns, tableName, whereConditions);
+    }
+
+    private InsertStatement parseInsert() throws SQLException {
+        if (!match("INTO")) {
+            throw new SQLException("Expected INTO keyword");
+        }
+        String tableName = consume();
+        if (!match("VALUES")) {
+            throw new SQLException("Expected VALUES keyword");
+        }
+        if (!match("(")) {
+            throw new SQLException("Expected ( after VALUES");
+        }
+        List<String> values = new ArrayList<>();
+        do {
+            values.add(consume());
+        } while (match(","));
+        if (!match(")")) {
+            throw new SQLException("Expected ) after values list");
+        }
+        return new InsertStatement(tableName, values);
     }
 }
