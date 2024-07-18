@@ -6,11 +6,9 @@ import codesquad.domain.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DataBase {
     private static final Logger logger = LoggerFactory.getLogger(DataBase.class);
@@ -89,7 +87,7 @@ public class DataBase {
                 pstmt.setString(idx++, post.userId());
                 pstmt.setString(idx++, post.userName());
                 pstmt.setString(idx++, post.imageUrl());
-                pstmt.setString(idx++, post.content());
+                pstmt.setString(idx++, encodeContent(post.content()));
                 pstmt.executeQuery();
             }
         } catch (SQLException e) {
@@ -114,7 +112,7 @@ public class DataBase {
                 pstmt.setString(idx++, comment.postId());
                 pstmt.setString(idx++, comment.userId());
                 pstmt.setString(idx++, comment.userName());
-                pstmt.setString(idx++, comment.comment());
+                pstmt.setString(idx++, encodeContent(comment.comment()));
                 pstmt.executeQuery();
             }
         } catch (SQLException e) {
@@ -186,7 +184,9 @@ public class DataBase {
             pstmt.setString(idx++, post.userId());
             pstmt.setString(idx++, post.userName());
             pstmt.setString(idx++, post.imageUrl());
-            pstmt.setString(idx++, post.content());
+            pstmt.setString(idx++, encodeContent(post.content()));
+            System.out.println(post.content());
+            System.out.println(encodeContent(post.content()));
             pstmt.executeQuery();
         } catch (SQLException e) {
             logger.error("Failed to add post: {}", post, e);
@@ -206,7 +206,7 @@ public class DataBase {
                         rs.getString("user_id"),
                         rs.getString("user_name"),
                         rs.getString("image_url"),
-                        rs.getString("content"),
+                        decodeContent(rs.getString("content")),
                         null,
                         null,
                         null
@@ -231,7 +231,7 @@ public class DataBase {
             pstmt.setString(idx++, comment.postId());
             pstmt.setString(idx++, comment.userId());
             pstmt.setString(idx++, comment.userName());
-            pstmt.setString(idx++, comment.comment());
+            pstmt.setString(idx++, encodeContent(comment.comment()));
             pstmt.executeQuery();
         } catch (SQLException e) {
             logger.error("Failed to add comment: {}", comment, e);
@@ -251,7 +251,7 @@ public class DataBase {
                             rs.getString("post_id"),
                             rs.getString("user_id"),
                             rs.getString("user_name"),
-                            rs.getString("comment"),
+                            decodeContent(rs.getString("comment")),
                             null,
                             null
                     ));
@@ -265,5 +265,24 @@ public class DataBase {
 
     private static String generatedId() {
         return UUID.randomUUID().toString();
+    }
+
+    private static String encodeContent(String content) {
+        try {
+            return Base64.getEncoder().encodeToString(content.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Failed to encode content", e);
+        }
+        return null;
+    }
+
+    private static String decodeContent(String encodedContent) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(encodedContent);
+            return new String(decodedBytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Failed to decode content", e);
+        }
+        return null;
     }
 }
