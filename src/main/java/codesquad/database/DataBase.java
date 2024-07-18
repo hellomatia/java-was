@@ -240,7 +240,7 @@ public class DataBase {
 
     public static List<Comment> findCommentsByPostId(String postId) {
         List<Comment> comments = new ArrayList<>();
-        String sql = "SELECT id , post_id , user_name , comment FROM comments WHERE post_id = ? ORDER BY created_at";
+        String sql = "SELECT id , post_id , user_id , user_name , comment FROM comments WHERE post_id = ? ORDER BY created_at";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, postId);
