@@ -61,7 +61,8 @@ public class DataBaseEngine {
             return;
         }
         if (columns.size() != values.size()) {
-            logger.error("Table {} does not have the same number of columns", tableName);
+            logger.error("Number of values ({}) does not match number of columns ({}) in table {}",
+                    values.size(), columns.size(), tableName);
             return;
         }
         appendRowToCSV(tableName, values);
@@ -71,26 +72,31 @@ public class DataBaseEngine {
         try (PrintWriter writer = new PrintWriter(new FileWriter(DATA_DIR + tableName + ".csv", true))) {
             writer.println(String.join(",", values));
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error("Error writing to CSV file: {}", e.getMessage());
         }
     }
 
     public ResultSet executeSelect(SelectStatement selectStatement) {
         List<Map<String, String>> results = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(DATA_DIR + selectStatement.getTableName() + ".csv"))) {
-            String line;
             List<String> columns = tableColumns.get(selectStatement.getTableName());
             reader.readLine(); // Skip header
+            String line;
             while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",");
+                List<String> values = parseCSVLine(line);
+                if (values.size() != columns.size()) {
+                    logger.warn("Mismatch in column count for line: " + line);
+                    continue;
+                }
                 Map<String, String> row = new HashMap<>();
                 for (int i = 0; i < columns.size(); i++) {
-                    row.put(columns.get(i), values[i]);
+                    row.put(columns.get(i), values.get(i));
                 }
                 if (matchesWhere(row, selectStatement.getWhereConditions())) {
-                    Map<String, String> resultRow = new HashMap<>();
+                    Map<String, String> resultRow = new LinkedHashMap<>();
                     for (String column : selectStatement.getColumns()) {
-                        resultRow.put(column, row.get(column));
+                        String value = row.get(column);
+                        resultRow.put(column, value);
                     }
                     results.add(resultRow);
                 }
@@ -101,9 +107,27 @@ public class DataBaseEngine {
         return new CsvDataBaseResultSet(results);
     }
 
+    private List<String> parseCSVLine(String line) {
+        List<String> result = new ArrayList<>();
+        StringBuilder currentField = new StringBuilder();
+        boolean inQuotes = false;
+        for (char c : line.toCharArray()) {
+            if (c == '\'') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                result.add(currentField.toString().trim());
+                currentField = new StringBuilder();
+            } else {
+                currentField.append(c);
+            }
+        }
+        result.add(currentField.toString().trim());
+        return result;
+    }
+
     private boolean matchesWhere(Map<String, String> row, Map<String, String> whereConditions) {
         for (Map.Entry<String, String> condition : whereConditions.entrySet()) {
-            if (!condition.getValue().equals(row.get(condition.getKey()))) {
+            if (!condition.getValue().replace("\'", "").equals(row.get(condition.getKey()))) {
                 return false;
             }
         }
