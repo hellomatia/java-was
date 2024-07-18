@@ -1,13 +1,16 @@
 package codesquad.domain.user;
-
-import codesquad.server.http.HttpRequest;
-import codesquad.server.http.HttpResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import codesquad.server.http.HttpRequest;
+import codesquad.server.http.HttpResponse;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserJoinHandlerTest {
+    private static final String BOUNDARY = "---------------------------1234567890";
     private UserJoinHandler userJoinHandler;
 
     @BeforeEach
@@ -16,46 +19,60 @@ class UserJoinHandlerTest {
     }
 
     @Test
-    void 멀티파트로_요청이_안들어올시_500반환() {
-        HttpRequest request = HttpRequest.builder()
-                .method("POST")
-                .path("/user/create")
-                .body("userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net")
-                .build();
-
-        HttpResponse response = userJoinHandler.handle(request);
-
-        assertNotNull(response);
-        assertEquals(500, response.getStatusCode());
-    }
-
-    @Test
-    void 처리_가능_여부_확인() {
-        HttpRequest request = HttpRequest.builder()
-                .method("POST")
-                .path("/user/create")
-                .build();
-
-        assertTrue(userJoinHandler.canHandle(request));
-    }
-
-    @Test
-    void 처리_불가능_여부_확인_잘못된_메서드() {
-        HttpRequest request = HttpRequest.builder()
+    void 회원가입_페이지_이동_상태코드_확인() throws IOException {
+        HttpRequest request = new HttpRequest.Builder()
                 .method("GET")
                 .path("/user/create")
                 .build();
 
-        assertFalse(userJoinHandler.canHandle(request));
+        HttpResponse response = userJoinHandler.moveJoin(request);
+
+        assertEquals(200, response.getStatusCode());
     }
 
     @Test
-    void 처리_불가능_여부_확인_잘못된_경로() {
-        HttpRequest request = HttpRequest.builder()
-                .method("POST")
-                .path("/wrong-path")
+    void 회원가입_페이지_이동_본문_확인() throws IOException {
+        HttpRequest request = new HttpRequest.Builder()
+                .method("GET")
+                .path("/user/create")
                 .build();
 
-        assertFalse(userJoinHandler.canHandle(request));
+        HttpResponse response = userJoinHandler.moveJoin(request);
+
+        assertTrue(new String(response.getBody()).contains("회원가입"));
+    }
+
+    @Test
+    void 회원가입_처리_리다이렉트_확인() throws IOException {
+        HttpRequest request = createMockMultipartRequest();
+
+        HttpResponse response = userJoinHandler.processJoin(request);
+
+        assertEquals(302, response.getStatusCode());
+        assertEquals("/", response.getHeaders().get("Location"));
+    }
+
+    private HttpRequest createMockMultipartRequest() throws UnsupportedEncodingException {
+        String body = "--" + BOUNDARY + "\r\n" +
+                "Content-Disposition: form-data; name=\"name\"\r\n\r\n" +
+                "홍길동\r\n" +
+                "--" + BOUNDARY + "\r\n" +
+                "Content-Disposition: form-data; name=\"email\"\r\n\r\n" +
+                "hong@example.com\r\n" +
+                "--" + BOUNDARY + "\r\n" +
+                "Content-Disposition: form-data; name=\"password\"\r\n\r\n" +
+                "password123\r\n" +
+                "--" + BOUNDARY + "\r\n" +
+                "Content-Disposition: form-data; name=\"userImage\"; filename=\"profile.jpg\"\r\n" +
+                "Content-Type: image/jpeg\r\n\r\n" +
+                "더미 이미지 데이터\r\n" +
+                "--" + BOUNDARY + "--";
+
+        return HttpRequest.builder()
+                .method("POST")
+                .path("/user/create")
+                .addHeader("Content-Type", "multipart/form-data; boundary=" + BOUNDARY)
+                .bodyBytes(body.getBytes("UTF-8"))
+                .build();
     }
 }

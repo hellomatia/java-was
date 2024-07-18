@@ -11,51 +11,72 @@ class UserLoginHandlerTest {
     private UserLoginHandler userLoginHandler;
 
     @BeforeEach
-    void 초기화() {
+    void setUp() {
         userLoginHandler = new UserLoginHandler();
     }
 
     @Test
-    void 요청_처리_확인() {
+    void moveLogin_반환_로그인페이지() {
         HttpRequest request = HttpRequest.builder()
                 .method("GET")
                 .path("/login")
                 .build();
 
-        HttpResponse response = userLoginHandler.handle(request);
+        HttpResponse response = userLoginHandler.moveLogin(request);
 
-        assertNotNull(response);
-        assertTrue(new String(response.getBody()).contains("<html>"));
         assertEquals(200, response.getStatusCode());
+        assertTrue(new String(response.getBody()).contains("<html>"));
+        assertTrue(new String(response.getBody()).contains("login"));
     }
 
     @Test
-    void 처리_가능_여부_확인() {
+    void processLogin_성공() {
         HttpRequest request = HttpRequest.builder()
-                .method("GET")
+                .method("POST")
                 .path("/login")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .body("userId=admin&password=admin")
                 .build();
 
-        assertTrue(userLoginHandler.canHandle(request));
+        HttpResponse response = userLoginHandler.processLogin(request);
+
+        assertEquals(302, response.getStatusCode());
+        assertEquals("/", response.getHeaders().get("Location"));
+
+        String setCookieHeader = response.getHeaders().get("Set-Cookie");
+        assertNotNull(setCookieHeader);
+        assertTrue(setCookieHeader.contains("sid="));
+        assertTrue(setCookieHeader.contains("Max-Age=1800"));
+        assertTrue(setCookieHeader.contains("HttpOnly"));
     }
 
     @Test
-    void 처리_불가능_여부_확인_잘못된_메서드() {
+    void processLogin_실패_잘못된_비밀번호() {
         HttpRequest request = HttpRequest.builder()
-                .method("DELETE")
+                .method("POST")
                 .path("/login")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .body("userId=admin&password=wrongpassword")
                 .build();
 
-        assertFalse(userLoginHandler.canHandle(request));
+        HttpResponse response = userLoginHandler.processLogin(request);
+
+        assertEquals(200, response.getStatusCode());
+        assertTrue(new String(response.getBody()).contains("실패"));
     }
 
     @Test
-    void 처리_불가능_여부_확인_잘못된_경로() {
+    void processLogin_실패_존재하지_않는_사용자() {
         HttpRequest request = HttpRequest.builder()
-                .method("GET")
-                .path("/wrong-path")
+                .method("POST")
+                .path("/login")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .body("userId=nonexistent&password=anypassword")
                 .build();
 
-        assertFalse(userLoginHandler.canHandle(request));
+        HttpResponse response = userLoginHandler.processLogin(request);
+
+        assertEquals(200, response.getStatusCode());
+        assertTrue(new String(response.getBody()).contains("실패"));
     }
 }
