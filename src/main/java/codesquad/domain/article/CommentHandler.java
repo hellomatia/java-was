@@ -21,7 +21,7 @@ public class CommentHandler extends AuthenticatedRequestHandler {
         Map<String, String> data = UrlEncodedBodyParser.parse(request.getBody());
         AuthResult authResult = authenticate(request);
         if (!authResult.isAuthenticated) {
-            redirectToLogin();
+            return redirectToLogin();
         }
         Comment comment = new Comment(
                 null,
