@@ -6,18 +6,14 @@ import codesquad.server.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MultipartFormDataParser {
     private static final Logger logger = LoggerFactory.getLogger(MultipartFormDataParser.class);
+    private static final String UTF_8 = "UTF-8";
 
     private MultipartFormDataParser() {
     }
@@ -34,7 +30,7 @@ public class MultipartFormDataParser {
             throw new IllegalArgumentException("No boundary found in multipart request");
         }
 
-        Charset charset = extractCharset(contentType);
+        String charset = extractCharset(contentType);
         return parseMultipartFormData(request.getBodyBytes(), boundary, charset);
     }
 
@@ -49,22 +45,22 @@ public class MultipartFormDataParser {
         return null;
     }
 
-    private static Charset extractCharset(String contentType) {
+    private static String extractCharset(String contentType) {
         String[] parts = contentType.split(";");
         for (String part : parts) {
             part = part.trim();
             if (part.startsWith("charset=")) {
                 try {
-                    return Charset.forName(part.substring("charset=".length()).trim());
+                    return part.substring("charset=".length()).trim();
                 } catch (Exception e) {
                     logger.warn("Invalid charset in Content-Type, using UTF-8", e);
                 }
             }
         }
-        return StandardCharsets.UTF_8; // 기본값으로 UTF-8 사용
+        return UTF_8; // 기본값으로 UTF-8 사용
     }
 
-    private static ParsedData parseMultipartFormData(byte[] body, String boundary, Charset charset) {
+    private static ParsedData parseMultipartFormData(byte[] body, String boundary,String charset) {
         Map<String, String> formData = new HashMap<>();
         Map<String, FileData> fileData = new HashMap<>();
         String boundaryString = "--" + boundary;
@@ -121,7 +117,7 @@ public class MultipartFormDataParser {
         return true;
     }
 
-    private static void processPartContent(String headers, byte[] content, Map<String, String> formData, Map<String, FileData> fileData, Charset charset) {
+    private static void processPartContent(String headers, byte[] content, Map<String, String> formData, Map<String, FileData> fileData, String charset) throws UnsupportedEncodingException {
         String[] headerLines = headers.split("\r\n");
         String fieldName = null;
         boolean isFile = false;
@@ -158,7 +154,7 @@ public class MultipartFormDataParser {
         if (fileName != null) {
             try {
                 // URL 디코딩을 사용하여 파일 이름 디코딩
-                fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8.name());
+                fileName = URLDecoder.decode(fileName, UTF_8);
             } catch (Exception e) {
                 logger.warn("Failed to decode file name: " + fileName, e);
             }
