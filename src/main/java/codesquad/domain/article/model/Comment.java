@@ -3,8 +3,8 @@ package codesquad.domain.article.model;
 import java.time.LocalDateTime;
 
 public record Comment(
-        Long id,
-        Long postId,
+        String id,
+        String postId,
         String userId,
         String userName,
         String comment,

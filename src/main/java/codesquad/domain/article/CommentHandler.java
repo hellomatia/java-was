@@ -19,9 +19,9 @@ public class CommentHandler extends CustomRequestHandler {
     @HttpMethod("POST")
     public HttpResponse handle(HttpRequest request) {
         String sessionId = request.getCookie("sid");
-        Long postId = Long.parseLong(request.getQueryParams().getOrDefault("postId", "-1"));
+        String postId = request.getQueryParams().getOrDefault("postId", "-1");
         Map<String, String> data = UrlEncodedBodyParser.parse(request.getBody());
-        if (sessionId != null && SessionManager.getSession(sessionId) != null && postId != -1) {
+        if (sessionId != null && SessionManager.getSession(sessionId) != null && !postId.equals("-1")) {
             Session session = SessionManager.getSession(sessionId);
             User user = (User) session.getAttribute("userInfo");
             Comment comment = new Comment(

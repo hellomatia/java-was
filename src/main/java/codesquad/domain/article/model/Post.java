@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record Post(
-        Long id,
+        String id,
         String title,
         String userId,
         String userName,

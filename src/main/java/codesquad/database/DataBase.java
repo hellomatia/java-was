@@ -7,13 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class DataBase {
     private static final Logger logger = LoggerFactory.getLogger(DataBase.class);
+    private static String[] postId;
 
     static {
         initializeData();
@@ -36,7 +37,7 @@ public class DataBase {
                 new User("Bob Johnson", "bobpass", "bob", "bob@example.com", null)
         );
 
-        String sql = "INSERT INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users VALUES ( ? , ? , ? , ? , ? )";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -46,8 +47,7 @@ public class DataBase {
                 pstmt.setString(3, user.password());
                 pstmt.setString(4, user.email());
                 pstmt.setString(5, user.userImageUrl());
-                pstmt.executeUpdate();
-                System.out.println(user);
+                pstmt.executeQuery();
             }
         } catch (SQLException e) {
             logger.error("Failed to initialize users", e);
@@ -76,17 +76,21 @@ public class DataBase {
                         null, null, null)
         );
 
-        String sql = "INSERT INTO posts (title, user_id, user_name, image_url, content) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO posts VALUES ( ? , ? , ? , ? , ? , ? )";
+        postId = new String[]{generatedId(), generatedId()};
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            int postIdx = 0;
             for (Post post : initialPosts) {
-                pstmt.setString(1, post.title());
-                pstmt.setString(2, post.userId());
-                pstmt.setString(3, post.userName());
-                pstmt.setString(4, post.imageUrl());
-                pstmt.setString(5, post.content());
-                pstmt.executeUpdate();
+                int idx = 1;
+                pstmt.setString(idx++, postId[postIdx++]);
+                pstmt.setString(idx++, post.title());
+                pstmt.setString(idx++, post.userId());
+                pstmt.setString(idx++, post.userName());
+                pstmt.setString(idx++, post.imageUrl());
+                pstmt.setString(idx++, post.content());
+                pstmt.executeQuery();
             }
         } catch (SQLException e) {
             logger.error("Failed to initialize posts", e);
@@ -95,21 +99,23 @@ public class DataBase {
 
     private static void initializeComments() {
         List<Comment> initialComments = Arrays.asList(
-                new Comment(null, 1L, "john", "John Doe", "Great post about reactive systems!", null, null),
-                new Comment(null, 1L, "jane", "Jane Smith", "I learned a lot from this. Thanks!", null, null),
-                new Comment(null, 2L, "bob", "Bob Johnson", "Looking forward to more posts on this topic.", null, null)
+                new Comment(null, postId[0], "john", "John Doe", "Great post about reactive systems!", null, null),
+                new Comment(null, postId[0], "jane", "Jane Smith", "I learned a lot from this. Thanks!", null, null),
+                new Comment(null, postId[1], "bob", "Bob Johnson", "Looking forward to more posts on this topic.", null, null)
         );
 
-        String sql = "INSERT INTO comments (post_id, user_id, user_name, comment) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO comments VALUES ( ? , ? , ? , ? , ? )";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             for (Comment comment : initialComments) {
-                pstmt.setLong(1, comment.postId());
-                pstmt.setString(2, comment.userId());
-                pstmt.setString(3, comment.userName());
-                pstmt.setString(4, comment.comment());
-                pstmt.executeUpdate();
+                int idx = 1;
+                pstmt.setString(idx++, generatedId());
+                pstmt.setString(idx++, comment.postId());
+                pstmt.setString(idx++, comment.userId());
+                pstmt.setString(idx++, comment.userName());
+                pstmt.setString(idx++, comment.comment());
+                pstmt.executeQuery();
             }
         } catch (SQLException e) {
             logger.error("Failed to initialize comments", e);
@@ -117,7 +123,7 @@ public class DataBase {
     }
 
     public static void addUser(User user) {
-        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users VALUES ( ? , ? , ? , ? , ? )";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.userId());
@@ -125,14 +131,14 @@ public class DataBase {
             pstmt.setString(3, user.password());
             pstmt.setString(4, user.email());
             pstmt.setString(5, user.userImageUrl());
-            pstmt.executeUpdate();
+            pstmt.executeQuery();
         } catch (SQLException e) {
             logger.info("Failed to add user: {}", user);
         }
     }
 
     public static User findUserByUserId(String userId) {
-        String sql = "SELECT * FROM users WHERE user_id = ?";
+        String sql = "SELECT user_name , password , user_id , email , user_image_url FROM users WHERE user_id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, userId);
@@ -146,15 +152,14 @@ public class DataBase {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            logger.info("Failed to find user, userId: {}", userId);
+            logger.info("Failed to find user, userId: {}", userId, e);
         }
         return null;
     }
 
     public static List<User> findAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users";
+        String sql = "SELECT user_name , password , user_id , email , user_image_url FROM users";
         try (Connection conn = DatabaseManager.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -172,128 +177,83 @@ public class DataBase {
     }
 
     public static void addPost(Post post) {
-        String sql = "INSERT INTO posts (title, user_id, user_name, image_url, content) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO posts VALUES ( ? , ? , ? , ? , ? , ? )";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, post.title());
-            pstmt.setString(2, post.userId());
-            pstmt.setString(3, post.userName());
-            pstmt.setString(4, post.imageUrl());
-            pstmt.setString(5, post.content());
-            pstmt.executeUpdate();
-
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    long id = generatedKeys.getLong(1);
-                    logger.info("Added post with ID: {}", id);
-                }
-            }
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            int idx = 1;
+            pstmt.setString(idx++, generatedId());
+            pstmt.setString(idx++, post.title());
+            pstmt.setString(idx++, post.userId());
+            pstmt.setString(idx++, post.userName());
+            pstmt.setString(idx++, post.imageUrl());
+            pstmt.setString(idx++, post.content());
+            pstmt.executeQuery();
         } catch (SQLException e) {
             logger.error("Failed to add post: {}", post, e);
         }
     }
 
-    public static Post findPostById(long id) {
-        String sql = "SELECT * FROM posts WHERE id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Post(
-                            rs.getLong("id"),
-                            rs.getString("title"),
-                            rs.getString("user_id"),
-                            rs.getString("user_name"),
-                            rs.getString("image_url"),
-                            rs.getString("content"),
-                            rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getTimestamp("updated_at").toLocalDateTime(),
-                            null
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Failed to find post, id: {}", id, e);
-        }
-        return null;
-    }
-
     public static List<Post> findAllPosts() {
         List<Post> posts = new ArrayList<>();
-        String sql = "SELECT * FROM posts ORDER BY created_at DESC";
+        String sql = "SELECT id , title , user_id , user_name , image_url , content FROM posts";
         try (Connection conn = DatabaseManager.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 posts.add(new Post(
-                        rs.getLong("id"),
+                        rs.getString("id"),
                         rs.getString("title"),
                         rs.getString("user_id"),
                         rs.getString("user_name"),
                         rs.getString("image_url"),
                         rs.getString("content"),
-                        rs.getTimestamp("created_at").toLocalDateTime(),
-                        rs.getTimestamp("updated_at").toLocalDateTime(),
+                        null,
+                        null,
                         null
                 ));
             }
         } catch (SQLException e) {
             logger.error("Failed to find posts", e);
         }
-        return posts;
-    }
-
-    public static void updatePost(Post post) {
-        String sql = "UPDATE posts SET user_name = ?, image_url = ?, content = ?, updated_at = ? WHERE id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, post.userName());
-            pstmt.setString(2, post.imageUrl());
-            pstmt.setString(3, post.content());
-            pstmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
-            pstmt.setLong(6, post.id());
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                logger.info("Updated post with ID: {}", post.id());
-            } else {
-                logger.warn("No post found with ID: {}", post.id());
-            }
-        } catch (SQLException e) {
-            logger.error("Failed to update post: {}", post, e);
+        List<Post> sortPosts = new ArrayList<>(posts);
+        for (int i = posts.size() - 1; i >= 0 ; i--) {
+            sortPosts.set(posts.size() - i - 1, posts.get(i));
         }
+        return sortPosts;
     }
 
     public static void addComment(Comment comment) {
-        String sql = "INSERT INTO comments (post_id, user_id, user_name, comment) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO comments VALUES ( ?, ? , ? , ? , ? )";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, comment.postId());
-            pstmt.setString(2, comment.userId());
-            pstmt.setString(3, comment.userName());
-            pstmt.setString(4, comment.comment());
-            pstmt.executeUpdate();
+            int idx = 1;
+            pstmt.setString(idx++, generatedId());
+            pstmt.setString(idx++, comment.postId());
+            pstmt.setString(idx++, comment.userId());
+            pstmt.setString(idx++, comment.userName());
+            pstmt.setString(idx++, comment.comment());
+            pstmt.executeQuery();
         } catch (SQLException e) {
             logger.error("Failed to add comment: {}", comment, e);
         }
     }
 
-    public static List<Comment> findCommentsByPostId(Long postId) {
+    public static List<Comment> findCommentsByPostId(String postId) {
         List<Comment> comments = new ArrayList<>();
-        String sql = "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at";
+        String sql = "SELECT id , post_id , user_name , comment FROM comments WHERE post_id = ? ORDER BY created_at";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, postId);
+            pstmt.setString(1, postId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     comments.add(new Comment(
-                            rs.getLong("id"),
-                            rs.getLong("post_id"),
+                            rs.getString("id"),
+                            rs.getString("post_id"),
                             rs.getString("user_id"),
                             rs.getString("user_name"),
                             rs.getString("comment"),
-                            rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getTimestamp("updated_at").toLocalDateTime()
+                            null,
+                            null
                     ));
                 }
             }
@@ -301,5 +261,9 @@ public class DataBase {
             logger.error("Failed to get comments for post: {}", postId, e);
         }
         return comments;
+    }
+
+    private static String generatedId() {
+        return UUID.randomUUID().toString();
     }
 }

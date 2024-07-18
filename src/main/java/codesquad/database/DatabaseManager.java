@@ -39,19 +39,14 @@ public class DatabaseManager {
                     "user_id , " +
                     "user_name , " +
                     "image_url , " +
-                    "content , " +
-                    "created_at , " +
-                    "updated_at )");
-
+                    "content )");
             logger.info("Initializing database: comments");
             stmt.executeQuery("CREATE TABLE comments (" +
                     "id , " +
                     "post_id , " +
                     "user_id , " +
                     "user_name , " +
-                    "comment , " +
-                    "created_at , " +
-                    "updated_at )");
+                    "comment )");
         } catch (SQLException e) {
             logger.error("Failed to initialize database", e);
         }
