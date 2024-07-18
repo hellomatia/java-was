@@ -1,6 +1,6 @@
 package codesquad.database.jdbc;
 
-import codesquad.database.engine.DataBaseEngine;
+import codesquad.database.engine.CsvDataBaseEngine;
 
 import java.sql.*;
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 public class CsvDataBaseConnection implements Connection {
-    private DataBaseEngine db = new DataBaseEngine();
+    private CsvDataBaseEngine db = new CsvDataBaseEngine();
 
     @Override
     public Statement createStatement() throws SQLException {

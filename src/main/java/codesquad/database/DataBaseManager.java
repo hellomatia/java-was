@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
-public class DatabaseManager {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
+public class DataBaseManager {
+    private static final Logger logger = LoggerFactory.getLogger(DataBaseManager.class);
     private static final String CSV_DATABASE_JDBC_URL = "jdbc:csvdatabase:";
     private static Connection connection;
 

@@ -1,15 +1,15 @@
 package codesquad.database.jdbc;
 
-import codesquad.database.engine.DataBaseEngine;
+import codesquad.database.engine.CsvDataBaseEngine;
 import codesquad.database.parser.SQLParser;
 import codesquad.database.statement.SQLStatement;
 
 import java.sql.*;
 
 public class CsvDataBaseStatement implements Statement {
-    private DataBaseEngine db;
+    private CsvDataBaseEngine db;
 
-    public CsvDataBaseStatement(DataBaseEngine db) {
+    public CsvDataBaseStatement(CsvDataBaseEngine db) {
         this.db = db;
     }
 

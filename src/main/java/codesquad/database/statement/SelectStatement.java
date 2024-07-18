@@ -1,6 +1,6 @@
 package codesquad.database.statement;
 
-import codesquad.database.engine.DataBaseEngine;
+import codesquad.database.engine.CsvDataBaseEngine;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +19,7 @@ public class SelectStatement implements SQLStatement {
     }
 
     @Override
-    public ResultSet execute(DataBaseEngine db) throws SQLException {
+    public ResultSet execute(CsvDataBaseEngine db) throws SQLException {
         return db.executeSelect(this);
     }
 

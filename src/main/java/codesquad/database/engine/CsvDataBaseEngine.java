@@ -9,12 +9,12 @@ import java.io.*;
 import java.sql.ResultSet;
 import java.util.*;
 
-public class DataBaseEngine {
-    private static final Logger logger = LoggerFactory.getLogger(DataBaseEngine.class);
+public class CsvDataBaseEngine {
+    private static final Logger logger = LoggerFactory.getLogger(CsvDataBaseEngine.class);
     private static final String DATA_DIR = "db_data/";
     private Map<String, List<String>> tableColumns = new HashMap<>();
 
-    public DataBaseEngine() {
+    public CsvDataBaseEngine() {
         File dir = new File(DATA_DIR);
         if (!dir.exists()) {
             dir.mkdirs();

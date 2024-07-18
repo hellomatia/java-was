@@ -36,7 +36,7 @@ public class DataBase {
         );
 
         String sql = "INSERT INTO users VALUES ( ? , ? , ? , ? , ? )";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             for (User user : initialUsers) {
@@ -76,7 +76,7 @@ public class DataBase {
 
         String sql = "INSERT INTO posts VALUES ( ? , ? , ? , ? , ? , ? )";
         postId = new String[]{generatedId(), generatedId()};
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             int postIdx = 0;
@@ -103,7 +103,7 @@ public class DataBase {
         );
 
         String sql = "INSERT INTO comments VALUES ( ? , ? , ? , ? , ? )";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             for (Comment comment : initialComments) {
@@ -122,7 +122,7 @@ public class DataBase {
 
     public static void addUser(User user) {
         String sql = "INSERT INTO users VALUES ( ? , ? , ? , ? , ? )";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.userId());
             pstmt.setString(2, user.name());
@@ -137,7 +137,7 @@ public class DataBase {
 
     public static User findUserByUserId(String userId) {
         String sql = "SELECT user_name , password , user_id , email , user_image_url FROM users WHERE user_id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, userId);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -158,7 +158,7 @@ public class DataBase {
     public static List<User> findAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT user_name , password , user_id , email , user_image_url FROM users";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -176,7 +176,7 @@ public class DataBase {
 
     public static void addPost(Post post) {
         String sql = "INSERT INTO posts VALUES ( ? , ? , ? , ? , ? , ? )";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             int idx = 1;
             pstmt.setString(idx++, generatedId());
@@ -196,7 +196,7 @@ public class DataBase {
     public static List<Post> findAllPosts() {
         List<Post> posts = new ArrayList<>();
         String sql = "SELECT id , title , user_id , user_name , image_url , content FROM posts";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -224,7 +224,7 @@ public class DataBase {
 
     public static void addComment(Comment comment) {
         String sql = "INSERT INTO comments VALUES ( ?, ? , ? , ? , ? )";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             int idx = 1;
             pstmt.setString(idx++, generatedId());
@@ -241,7 +241,7 @@ public class DataBase {
     public static List<Comment> findCommentsByPostId(String postId) {
         List<Comment> comments = new ArrayList<>();
         String sql = "SELECT id , post_id , user_id , user_name , comment FROM comments WHERE post_id = ? ORDER BY created_at";
-        try (Connection conn = DatabaseManager.getConnection();
+        try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, postId);
             try (ResultSet rs = pstmt.executeQuery()) {
