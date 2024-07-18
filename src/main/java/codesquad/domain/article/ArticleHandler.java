@@ -11,12 +11,14 @@ import codesquad.server.http.parser.MultipartFormDataParser;
 
 import java.io.IOException;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
+import static codesquad.domain.util.Constants.HTTP_METHOD_POST;
 import static codesquad.server.util.FileUtils.readFileContent;
 import static codesquad.server.util.FileUtils.saveImage;
 
 @Handler("/article")
 public class ArticleHandler extends AuthenticatedRequestHandler {
-    @HttpMethod("GET")
+    @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse moveWriteArticle(HttpRequest request) {
         String sessionId = request.getCookie("sid");
         AuthResult authResult = authenticate(request);
@@ -26,7 +28,7 @@ public class ArticleHandler extends AuthenticatedRequestHandler {
         return redirectToLogin();
     }
 
-    @HttpMethod("POST")
+    @HttpMethod(HTTP_METHOD_POST)
     public HttpResponse writeArticle(HttpRequest request) {
         MultipartFormDataParser.ParsedData parsedData = MultipartFormDataParser.parse(request);
         AuthResult authResult = authenticate(request);

@@ -19,9 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
+
 @Handler("/")
 public class HomeHandler extends AuthenticatedRequestHandler {
-    @HttpMethod("GET")
+    @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse moveHome(HttpRequest request) throws IOException {
         Map<String, Object> data = new HashMap<>();
         List<Post> posts = DataBase.findAllPosts();

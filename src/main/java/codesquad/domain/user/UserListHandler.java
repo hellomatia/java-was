@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
+
 @Handler("/user/list")
 public class UserListHandler extends AuthenticatedRequestHandler {
-    @HttpMethod("GET")
+    @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse moveUserList(HttpRequest request) throws IOException {
         AuthResult authResult = authenticate(request);
         if (authResult.isAuthenticated) {

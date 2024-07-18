@@ -11,9 +11,11 @@ import codesquad.server.http.parser.UrlEncodedBodyParser;
 
 import java.util.Map;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_POST;
+
 @Handler("/comment")
 public class CommentHandler extends AuthenticatedRequestHandler {
-    @HttpMethod("POST")
+    @HttpMethod(HTTP_METHOD_POST)
     public HttpResponse writeComment(HttpRequest request) {
         String postId = request.getQueryParams().getOrDefault("postId", "-1");
         Map<String, String> data = UrlEncodedBodyParser.parse(request.getBody());

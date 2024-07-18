@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
+import static codesquad.domain.util.Constants.HTTP_METHOD_POST;
 import static codesquad.server.util.FileUtils.readFileContent;
 import static codesquad.server.util.FileUtils.saveImage;
 
@@ -21,13 +23,13 @@ import static codesquad.server.util.FileUtils.saveImage;
 public class UserJoinHandler extends CustomRequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(UserJoinHandler.class);
 
-    @HttpMethod("GET")
+    @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse moveJoin(HttpRequest request) {
         return ok(readFileContent("/static/registration/index.html"))
                 .build();
     }
 
-    @HttpMethod("POST")
+    @HttpMethod(HTTP_METHOD_POST)
     public HttpResponse processJoin(HttpRequest request) throws IOException {
         MultipartFormDataParser.ParsedData parsedData = MultipartFormDataParser.parse(request);
         String name = parsedData.getFormData().get("name");
