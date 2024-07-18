@@ -20,7 +20,6 @@ import static codesquad.server.util.FileUtils.saveImage;
 public class ArticleHandler extends AuthenticatedRequestHandler {
     @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse moveWriteArticle(HttpRequest request) {
-        String sessionId = request.getCookie("sid");
         AuthResult authResult = authenticate(request);
         if (authResult.isAuthenticated) {
             return ok(readFileContent("/static/article/index.html")).build();
