@@ -14,13 +14,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static codesquad.server.util.FileUtils.readFileContent;
 import static codesquad.server.util.FileUtils.saveImage;
 
 @Handler("/user/create")
 public class UserJoinHandler extends CustomRequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
-    public UserJoinHandler() {
+    @HttpMethod("GET")
+    public HttpResponse moveJoin(HttpRequest request) {
+        return ok(readFileContent("/static/registration/index.html"))
+                .build();
     }
 
     @HttpMethod("POST")
