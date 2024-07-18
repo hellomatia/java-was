@@ -3,10 +3,11 @@ package codesquad.server.handler;
 import codesquad.server.http.ContentType;
 import codesquad.server.http.HttpResponse;
 
-import static codesquad.server.handler.Constants.ERROR_PAGE_PATH;
 import static codesquad.server.util.FileUtils.readFileContent;
 
 public abstract class AbstractRequestHandler implements RequestHandler {
+    private static final String ERROR_PAGE_PATH = "/static/error/";
+
     protected HttpResponse.Builder ok(byte[] body) {
         return HttpResponse.builder()
                 .statusCode(200)
