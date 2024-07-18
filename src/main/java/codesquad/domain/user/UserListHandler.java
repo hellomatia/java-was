@@ -22,8 +22,8 @@ public class UserListHandler extends AuthenticatedRequestHandler {
     @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse moveUserList(HttpRequest request) throws IOException {
         AuthResult authResult = authenticate(request);
-        if (authResult.isAuthenticated) {
-            redirectToLogin();
+        if (!authResult.isAuthenticated) {
+            return redirectToLogin();
         }
         Map<String, Object> data = new HashMap<>();
         data.put("isLoggedIn", authResult.isAuthenticated);
