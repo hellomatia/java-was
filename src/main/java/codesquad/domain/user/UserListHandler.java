@@ -18,7 +18,7 @@ import java.util.Map;
 @Handler("/user/list")
 public class UserListHandler extends AuthenticatedRequestHandler {
     @HttpMethod("GET")
-    public HttpResponse shoUserList(HttpRequest request) throws IOException {
+    public HttpResponse moveUserList(HttpRequest request) throws IOException {
         AuthResult authResult = authenticate(request);
         if (authResult.isAuthenticated) {
             redirectToLogin();

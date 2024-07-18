@@ -19,7 +19,7 @@ import static codesquad.server.util.FileUtils.saveImage;
 
 @Handler("/user/create")
 public class UserJoinHandler extends CustomRequestHandler {
-    private static final Logger logger = LoggerFactory.getLogger(Server.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserJoinHandler.class);
 
     @HttpMethod("GET")
     public HttpResponse moveJoin(HttpRequest request) {
@@ -28,9 +28,8 @@ public class UserJoinHandler extends CustomRequestHandler {
     }
 
     @HttpMethod("POST")
-    public HttpResponse createUser(HttpRequest request) throws IOException {
+    public HttpResponse processJoin(HttpRequest request) throws IOException {
         MultipartFormDataParser.ParsedData parsedData = MultipartFormDataParser.parse(request);
-
         String name = parsedData.getFormData().get("name");
         String email = parsedData.getFormData().get("email");
         String password = parsedData.getFormData().get("password");
@@ -39,6 +38,6 @@ public class UserJoinHandler extends CustomRequestHandler {
         User user = new User(name, password, userId, email, userImageUrl);
         DataBase.addUser(user);
         logger.debug("User info: {}", user);
-        return redirect("/index.html").build();
+        return redirect("/").build();
     }
 }

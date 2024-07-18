@@ -18,12 +18,8 @@ import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/login")
 public class UserLoginHandler extends CustomRequestHandler {
-
-    public UserLoginHandler() {
-    }
-
     @HttpMethod("GET")
-    public HttpResponse showLoginPage(HttpRequest request) {
+    public HttpResponse moveLogin(HttpRequest request) {
         return ok(readFileContent("/static/login/index.html")).build();
     }
 

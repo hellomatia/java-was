@@ -22,7 +22,7 @@ import java.util.Map;
 @Handler("/")
 public class HomeHandler extends AuthenticatedRequestHandler {
     @HttpMethod("GET")
-    public HttpResponse showMainPage(HttpRequest request) throws IOException {
+    public HttpResponse moveHome(HttpRequest request) throws IOException {
         Map<String, Object> data = new HashMap<>();
         List<Post> posts = DataBase.findAllPosts();
         for (int i = 0; i < posts.size(); i++) {
