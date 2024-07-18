@@ -28,9 +28,7 @@ public class CommentHandler extends AuthenticatedRequestHandler {
                 postId,
                 authResult.user.userId(),
                 authResult.user.name(),
-                data.get("comment"),
-                null,
-                null
+                data.get("comment")
         );
         DataBase.addComment(comment);
         return redirect("/").build();

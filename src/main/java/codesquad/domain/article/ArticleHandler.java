@@ -52,8 +52,6 @@ public class ArticleHandler extends AuthenticatedRequestHandler {
                 authResult.user.name(),
                 imageUrl,
                 parsedData.getFormData().get("content"),
-                null,
-                null,
                 null);
 
         DataBase.addPost(post);

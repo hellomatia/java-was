@@ -62,7 +62,7 @@ public class DataBase {
                                 "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
-                        null, null, null),
+                        null),
                 new Post(null, "리액티브 시스템2", "admin", "Admin", "/image",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
@@ -71,7 +71,7 @@ public class DataBase {
                                 "이로 인해 개발이 더 쉬워지고 변경 사항을 적용하기 쉬워집니다. " +
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
-                        null, null, null)
+                        null)
         );
 
         String sql = "INSERT INTO posts VALUES ( ? , ? , ? , ? , ? , ? )";
@@ -97,9 +97,9 @@ public class DataBase {
 
     private static void initializeComments() {
         List<Comment> initialComments = Arrays.asList(
-                new Comment(null, postId[0], "john", "John Doe", "Great post about reactive systems!", null, null),
-                new Comment(null, postId[0], "jane", "Jane Smith", "I learned a lot from this. Thanks!", null, null),
-                new Comment(null, postId[1], "bob", "Bob Johnson", "Looking forward to more posts on this topic.", null, null)
+                new Comment(null, postId[0], "john", "John Doe", "Great post about reactive systems!"),
+                new Comment(null, postId[0], "jane", "Jane Smith", "I learned a lot from this. Thanks!"),
+                new Comment(null, postId[1], "bob", "Bob Johnson", "Looking forward to more posts on this topic.")
         );
 
         String sql = "INSERT INTO comments VALUES ( ? , ? , ? , ? , ? )";
@@ -207,8 +207,6 @@ public class DataBase {
                         rs.getString("user_name"),
                         rs.getString("image_url"),
                         decodeContent(rs.getString("content")),
-                        null,
-                        null,
                         null
                 ));
             }
@@ -251,9 +249,7 @@ public class DataBase {
                             rs.getString("post_id"),
                             rs.getString("user_id"),
                             rs.getString("user_name"),
-                            decodeContent(rs.getString("comment")),
-                            null,
-                            null
+                            decodeContent(rs.getString("comment"))
                     ));
                 }
             }
