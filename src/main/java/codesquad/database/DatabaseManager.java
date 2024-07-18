@@ -1,6 +1,5 @@
 package codesquad.database;
 
-import codesquad.database.jdbc.CsvDataBaseConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,24 +7,32 @@ import java.sql.*;
 
 public class DatabaseManager {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseManager.class);
+    private static final String CSV_DATABASE_JDBC_URL = "jdbc:csvdatabase:";
+    private static Connection connection;
 
     static {
         try {
+            Class.forName("codesquad.database.jdbc.CsvDataBaseDriver");
             initDatabase();
         } catch (Exception e) {
             logger.error("Failed to initialize database", e);
-            throw new RuntimeException("Database initialization failed", e);
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        return new CsvDataBaseConnection();
+        if (connection == null || connection.isClosed()) {
+            try {
+                connection = DriverManager.getConnection(CSV_DATABASE_JDBC_URL);
+            } catch (SQLException e) {
+                logger.error("Failed to connect to database", e);
+            }
+        }
+        return connection;
     }
 
     public static void initDatabase() {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
-            logger.info("Initializing database: users");
             stmt.executeQuery("CREATE TABLE users (" +
                     "user_id , " +
                     "user_name , " +
@@ -40,13 +47,14 @@ public class DatabaseManager {
                     "user_name , " +
                     "image_url , " +
                     "content )");
-            logger.info("Initializing database: comments");
+            logger.info("Initializing database: users");
             stmt.executeQuery("CREATE TABLE comments (" +
                     "id , " +
                     "post_id , " +
                     "user_id , " +
                     "user_name , " +
                     "comment )");
+            logger.info("Initializing database: comments");
         } catch (SQLException e) {
             logger.error("Failed to initialize database", e);
         }
