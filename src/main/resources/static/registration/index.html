@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="../reset.css" rel="stylesheet" />
   <link href="../global.css" rel="stylesheet" />
+  <style>
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    #fileInputLabel {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #fileInputLabel:hover {
+      background-color: #0056b3;
+    }
+
+    #fileName {
+      margin-left: 10px;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -23,7 +58,21 @@
   </header>
   <div class="page">
     <h2 class="page-title">회원가입</h2>
-    <form class="form" action="/user/create" method="post">
+    <form class="form" action="/user/create" method="post" enctype="multipart/form-data">
+      <div class="textfield textfield_size_s">
+        <p class="title_textfield">프로필 이미지</p>
+        <div class="file-input-wrapper">
+          <label id="fileInputLabel" for="imageInput" class="btn btn_contained btn_size_s">이미지 선택</label>
+          <input
+                  type="file"
+                  name="userImage"
+                  id="imageInput"
+                  accept="image/*"
+                  required
+          />
+          <span id="fileName"></span>
+        </div>
+      </div>
       <div class="textfield textfield_size_s">
         <p class="title_textfield">아이디</p>
         <input
@@ -51,7 +100,7 @@
                 name="password"
                 type="password"
                 placeholder="비밀번호를 입력해주세요"
-                autocomplete="current-password"
+                autocomplete="new-password"
                 required
         />
       </div>
@@ -77,5 +126,11 @@
     </form>
   </div>
 </div>
+<script>
+  document.getElementById('imageInput').addEventListener('change', function(e) {
+    var fileName = e.target.files[0] ? e.target.files[0].name : '파일이 선택되지 않았습니다.';
+    document.getElementById('fileName').textContent = fileName;
+  });
+</script>
 </body>
 </html>

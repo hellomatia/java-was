@@ -31,13 +31,13 @@ public class DataBase {
 
     private static void initializeUsers() {
         List<User> initialUsers = Arrays.asList(
-                new User("Admin", "admin", "admin", "admin@example.com"),
-                new User("John Doe", "password123", "john", "john@example.com"),
-                new User("Jane Smith", "pass456", "jane", "jane@example.com"),
-                new User("Bob Johnson", "bobpass", "bob", "bob@example.com")
+                new User("Admin", "admin", "admin", "admin@example.com", null),
+                new User("John Doe", "password123", "john", "john@example.com", null),
+                new User("Jane Smith", "pass456", "jane", "jane@example.com", null),
+                new User("Bob Johnson", "bobpass", "bob", "bob@example.com", null)
         );
 
-        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -46,7 +46,9 @@ public class DataBase {
                 pstmt.setString(2, user.name());
                 pstmt.setString(3, user.password());
                 pstmt.setString(4, user.email());
+                pstmt.setString(5, user.userImageUrl());
                 pstmt.executeUpdate();
+                System.out.println(user);
             }
         } catch (SQLException e) {
             logger.error("Failed to initialize users", e);
@@ -55,7 +57,7 @@ public class DataBase {
 
     private static void initializePosts() {
         List<Post> initialPosts = Arrays.asList(
-                new Post(null, "리액티브 시스템1", "admin", "Admin", "",
+                new Post(null, "리액티브 시스템1", "admin", "Admin", "/image",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
                                 "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
@@ -64,7 +66,7 @@ public class DataBase {
                                 "이 시스템은 장애에 대해 더 강한 내성을 지니며, 비록 장애가 발생하더라도, 재난이 일어나기 보다는 간결한 방식으로 해결합니다. " +
                                 "리액티브 시스템은 높은 응답성을 가지며 사용자에게 효과적인 상호적 피드백을 제공합니다.",
                         null, null, null),
-                new Post(null, "리액티브 시스템2", "admin", "Admin", "",
+                new Post(null, "리액티브 시스템2", "admin", "Admin", "/image",
                         "우리는 시스템 아키텍처에 대한 일관성 있는 접근이 필요하며, 필요한 모든 측면은 이미 개별적으로 인식되고 있다고 생각합니다. " +
                                 "즉, 응답이 잘 되고, 탄력적이며 유연하고 메시지 기반으로 동작하는 시스템 입니다. " +
                                 "우리는 이것을 리액티브 시스템(Reactive Systems)라고 부릅니다. " +
@@ -116,13 +118,14 @@ public class DataBase {
     }
 
     public static void addUser(User user) {
-        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?)";
+        String sql = "MERGE INTO users KEY(user_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.userId());
             pstmt.setString(2, user.name());
             pstmt.setString(3, user.password());
             pstmt.setString(4, user.email());
+            pstmt.setString(5, user.userImageUrl());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             logger.info("Failed to add user: {}", user);
@@ -139,7 +142,8 @@ public class DataBase {
                     return new User(rs.getString("user_name"),
                             rs.getString("password"),
                             rs.getString("user_id"),
-                            rs.getString("email"));
+                            rs.getString("email"),
+                            rs.getString("user_image_url"));
                 }
             }
         } catch (SQLException e) {
@@ -159,7 +163,8 @@ public class DataBase {
                 users.add(new User(rs.getString("user_name"),
                         rs.getString("password"),
                         rs.getString("user_id"),
-                        rs.getString("email")));
+                        rs.getString("email"),
+                        rs.getString("user_image_url")));
             }
         } catch (SQLException e) {
             logger.error("Failed to find users", e);

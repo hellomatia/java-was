@@ -16,7 +16,7 @@ class UserJoinHandlerTest {
     }
 
     @Test
-    void 요청_처리_확인() {
+    void 멀티파트로_요청이_안들어올시_500반환() {
         HttpRequest request = HttpRequest.builder()
                 .method("POST")
                 .path("/user/create")
@@ -26,7 +26,7 @@ class UserJoinHandlerTest {
         HttpResponse response = userJoinHandler.handle(request);
 
         assertNotNull(response);
-        assertEquals(302, response.getStatusCode());
+        assertEquals(500, response.getStatusCode());
     }
 
     @Test

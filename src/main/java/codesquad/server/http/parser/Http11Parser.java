@@ -9,18 +9,17 @@ public class Http11Parser {
     }
 
     public static HttpRequest parse(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         HttpRequest.Builder builder = HttpRequest.builder();
 
-        String requestLine = reader.readLine();
-        parseRequestLine(requestLine, builder);
-        parseHeaders(reader, builder);
-        parseBody(reader, builder);
+        parseRequestLine(inputStream, builder);
+        parseHeaders(inputStream, builder);
+        parseBody(inputStream, builder);
 
         return builder.build();
     }
 
-    private static void parseRequestLine(String requestLine, HttpRequest.Builder builder) {
+    private static void parseRequestLine(InputStream inputStream, HttpRequest.Builder builder) throws IOException {
+        String requestLine = readLine(inputStream);
         if (requestLine == null || requestLine.isEmpty()) {
             throw new IllegalArgumentException("Empty request line");
         }
@@ -33,9 +32,9 @@ public class Http11Parser {
         builder.version(parts[2]);
     }
 
-    private static void parseHeaders(BufferedReader reader, HttpRequest.Builder builder) throws IOException {
+    private static void parseHeaders(InputStream inputStream, HttpRequest.Builder builder) throws IOException {
         String headerLine;
-        while (!(headerLine = reader.readLine()).isEmpty()) {
+        while (!(headerLine = readLine(inputStream)).isEmpty()) {
             int colonIndex = headerLine.indexOf(':');
             if (colonIndex > 0) {
                 String name = headerLine.substring(0, colonIndex).trim();
@@ -98,15 +97,42 @@ public class Http11Parser {
         }
     }
 
-    private static void parseBody(BufferedReader reader, HttpRequest.Builder builder) throws IOException {
+    private static void parseBody(InputStream inputStream, HttpRequest.Builder builder) throws IOException {
         String contentLengthHeader = builder.getHeader("Content-Length");
         if (contentLengthHeader != null) {
             int contentLength = Integer.parseInt(contentLengthHeader);
-            char[] bodyChars = new char[contentLength];
-            int charsRead = reader.read(bodyChars, 0, contentLength);
-            if (charsRead > 0) {
-                builder.body(new String(bodyChars, 0, charsRead).trim());
+            byte[] bodyBytes = new byte[contentLength];
+            int bytesRead = 0;
+            int read;
+            while (bytesRead < contentLength && (read = inputStream.read(bodyBytes, bytesRead, contentLength - bytesRead)) != -1) {
+                bytesRead += read;
+            }
+            builder.bodyBytes(bodyBytes);
+            String contentType = builder.getHeader("Content-Type");
+            if (contentType != null) {
+                builder.body(new String(bodyBytes, "UTF-8").trim());
             }
         }
+    }
+
+    private static String readLine(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int lastByte = -1;
+        int currentByte;
+        while ((currentByte = inputStream.read()) != -1) {
+            if (lastByte == '\r' && currentByte == '\n') {
+                baos.write(lastByte);
+                baos.write(currentByte);
+                break;
+            }
+            if (lastByte != -1) {
+                baos.write(lastByte);
+            }
+            lastByte = currentByte;
+        }
+        if (baos.size() == 0) {
+            return "";
+        }
+        return new String(baos.toByteArray(), "UTF-8").trim();
     }
 }
