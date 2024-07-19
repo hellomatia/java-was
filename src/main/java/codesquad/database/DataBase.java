@@ -214,7 +214,7 @@ public class DataBase {
             logger.error("Failed to find posts", e);
         }
         List<Post> sortPosts = new ArrayList<>(posts);
-        for (int i = posts.size() - 1; i >= 0 ; i--) {
+        for (int i = posts.size() - 1; i >= 0; i--) {
             sortPosts.set(posts.size() - i - 1, posts.get(i));
         }
         return sortPosts;

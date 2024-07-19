@@ -101,7 +101,7 @@ public class CsvDataBaseEngine {
                     results.add(resultRow);
                 }
             }
-        } catch(IOException e){
+        } catch (IOException e) {
             logger.error("Error reading CSV file", e);
         }
         return new CsvDataBaseResultSet(results);
@@ -134,4 +134,3 @@ public class CsvDataBaseEngine {
         return true;
     }
 }
-

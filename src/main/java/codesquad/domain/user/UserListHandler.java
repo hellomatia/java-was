@@ -2,13 +2,10 @@ package codesquad.domain.user;
 
 import codesquad.database.DataBase;
 import codesquad.domain.AuthenticatedRequestHandler;
-import codesquad.domain.user.model.User;
-import codesquad.server.handler.CustomRequestHandler;
 import codesquad.server.handler.annotation.Handler;
 import codesquad.server.handler.annotation.HttpMethod;
 import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
-import codesquad.server.session.SessionManager;
 import codesquad.server.template.engine.TemplateEngine;
 
 import java.io.IOException;

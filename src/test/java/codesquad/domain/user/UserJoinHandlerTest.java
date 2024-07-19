@@ -1,4 +1,5 @@
 package codesquad.domain.user;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import codesquad.server.http.HttpRequest;
