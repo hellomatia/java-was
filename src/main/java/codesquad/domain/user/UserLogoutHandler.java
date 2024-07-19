@@ -7,9 +7,11 @@ import codesquad.server.http.HttpRequest;
 import codesquad.server.http.HttpResponse;
 import codesquad.server.session.SessionManager;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
+
 @Handler("/logout")
-public class UserLogout extends CustomRequestHandler {
-    @HttpMethod("GET")
+public class UserLogoutHandler extends CustomRequestHandler {
+    @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse processLogout(HttpRequest request) {
         String sessionId = request.getCookie("sid");
         if (sessionId != null) {

@@ -14,20 +14,18 @@ import codesquad.server.session.SessionManager;
 import java.util.Map;
 import java.util.Objects;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
+import static codesquad.domain.util.Constants.HTTP_METHOD_POST;
 import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/login")
 public class UserLoginHandler extends CustomRequestHandler {
-
-    public UserLoginHandler() {
-    }
-
-    @HttpMethod("GET")
-    public HttpResponse showLoginPage(HttpRequest request) {
+    @HttpMethod(HTTP_METHOD_GET)
+    public HttpResponse moveLogin(HttpRequest request) {
         return ok(readFileContent("/static/login/index.html")).build();
     }
 
-    @HttpMethod("POST")
+    @HttpMethod(HTTP_METHOD_POST)
     public HttpResponse processLogin(HttpRequest request) {
         Map<String, String> params = UrlEncodedBodyParser.parse(request.getBody());
         String userId = params.get("userId");

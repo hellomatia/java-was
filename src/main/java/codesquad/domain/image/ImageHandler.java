@@ -14,13 +14,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import static codesquad.domain.util.Constants.HTTP_METHOD_GET;
 import static codesquad.server.util.FileUtils.readFileContent;
 
 @Handler("/image")
 public class ImageHandler extends CustomRequestHandler {
     private static final String IMAGE_DIRECTORY = "image";
 
-    @HttpMethod("GET")
+    @HttpMethod(HTTP_METHOD_GET)
     public HttpResponse getImage(HttpRequest request) {
         String imageName = request.getQueryParam("name");
         byte[] image;

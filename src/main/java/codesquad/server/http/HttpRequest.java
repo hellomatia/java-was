@@ -52,9 +52,13 @@ public class HttpRequest {
         return new HashMap<>(queryParams);
     }
 
-    public String getBody() { return body; }
+    public String getBody() {
+        return body;
+    }
 
-    public byte[] getBodyBytes() { return bodyBytes; }
+    public byte[] getBodyBytes() {
+        return bodyBytes;
+    }
 
     @Override
     public String toString() {

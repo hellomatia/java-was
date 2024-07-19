@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ThreadPoolTest {
-
     @Test
     void 스레드풀이_태스크를_실행함() throws InterruptedException {
         ThreadPool threadPool = new ThreadPool(2);
